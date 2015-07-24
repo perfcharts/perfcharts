@@ -37,7 +37,7 @@ public class NMONParser implements DataParser {
                     break;
                 records.add(it.next());
             } catch (Exception ex) {
-                System.err.println("WARNING: invalid data row skipped (" + ex.toString() + ")");
+                System.err.println("WARNING: invalid data row skipped (" + ex.toString() + ") at line " + csvParser.getCurrentLineNumber());
             }
         }
         //List<CSVRecord> records = csvParser.getRecords();
