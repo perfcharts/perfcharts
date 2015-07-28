@@ -561,13 +561,19 @@ function ChartGeneration($) {
 				minTickSize : 1,
 				tickSize : 1
 			}
-			if (chart.xaxisTicks) {
-				options.xaxis.ticks = chart.xaxisTicks;
-			} else {
-				options.xaxis.tickFormatter = function(num, _) {
-					return Math.round(num);
-				};
-			}
+			options.xaxis.tickFormatter = function(num, _) {
+            	var rawTick = Math.round(num);
+            	if (!chart.xaxisTicks)
+            		return rawTick;
+            	if (!chart.stringMap) {
+            		chart.stringMap = {};
+            		for (var i = 0; i < chart.xaxisTicks.length; ++i) {
+            			chart.stringMap[chart.xaxisTicks[i][0]] = chart.xaxisTicks[i][1];
+            		}
+            	}
+            	var newTick = chart.stringMap[rawTick];
+                return newTick ? "<div class='category_tick'>" + newTick + "</div>" : "";
+            };
 			break;
 		default:
 			break;

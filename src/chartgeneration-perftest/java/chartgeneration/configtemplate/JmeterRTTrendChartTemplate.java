@@ -2,14 +2,13 @@ package chartgeneration.configtemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import chartgeneration.calc.EmptyCalculation;
+import chartgeneration.chart.Chart2D;
 import chartgeneration.common.FieldSelector;
 import chartgeneration.common.IndexFieldSelector;
-import chartgeneration.config.AxisMode;
-import chartgeneration.config.Chart2DConfig;
-import chartgeneration.config.Chart2DSeriesConfigRule;
-import chartgeneration.config.SeriesOrder;
+import chartgeneration.config.*;
 import chartgeneration.tick.LongStringTickGenerator;
 public class JmeterRTTrendChartTemplate extends Chart2DTemplateBase {
 
@@ -27,7 +26,7 @@ public class JmeterRTTrendChartTemplate extends Chart2DTemplateBase {
 				AxisMode.INTEGER);
 		cfg.setXTickGenerator(new LongStringTickGenerator("^XTICK$", getLabelField(), xField, buildIDField));
 		cfg.setSeriesOrder(SeriesOrder.SERIES_LABEL);
-		return cfg;
+        return cfg;
 	}
 
 }
