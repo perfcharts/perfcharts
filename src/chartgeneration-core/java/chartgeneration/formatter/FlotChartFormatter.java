@@ -91,65 +91,6 @@ public class FlotChartFormatter implements Chart2DFormatter {
 				chartJson.put("stringMapSize", stringMapJson.length());
 			}
 		}
-
-		// StringBuilder sb = new StringBuilder("\n{\"title\":\"")
-		// .append(graph.getTitle().replace("\"", "\\\""))
-		// .append("\",\"xLabel\":\"")
-		// .append(graph.getXLabel().replace("\"", "\\\""))
-		// .append("\",\"yLabel\":\"")
-		// .append(graph.getYLabel().replace("\"", "\\\""))
-		// .append("\",\"xaxisMode\":\"")
-		// .append(graph.getXaxisMode().toString()).append("\"");
-		// if (graph.getSubtitle() != null) {
-		// sb.append(",\"subtitle\":\"")
-		// .append(graph.getSubtitle().replace("\"", "\\\""))
-		// .append("\"");
-		// }
-		// if (graph.getKey() != null) {
-		// sb.append(",\"key\":\"")
-		// .append(graph.getKey().replace("\"", "\\\"")).append("\"");
-		// }
-		// if (graph.getXTicks() != null) {
-		// sb.append(",\"xaxisTicks\":").append(graph.getXTicks().format());
-		// }
-		// sb.append(",\"series\":[");
-		// for (Chart2DSeries line : graph.getLines()) {
-		// sb.append("\n{\"label\":\"")
-		// .append(line.getLabel().replace("\"", "\\\"")).append("\"");
-		// if (line.getUnit() != null) {
-		// sb.append(",\"_unit\":{\"value\":\"")
-		// .append(line.getUnit().replace("\"", "\\\""))
-		// .append("\"");
-		// if (line.isShowUnit())
-		// sb.append(",\"show\":true");
-		// sb.append("}");
-		// }
-		// if (line.isShowBars()) {
-		// sb.append(",\"bars\":{\"show\":true}");
-		// }
-		// if (!line.isShowLine()) {
-		// sb.append(",\"lines\":{\"show\":false}");
-		// }
-		// sb.append(",\"data\":[");
-		// for (Point2D stop : line.getStops()) {
-		// formatStop(sb, stop);
-		// sb.append(",");
-		// }
-		// if (!line.getStops().isEmpty())
-		// sb.deleteCharAt(sb.length() - 1);
-		// sb.append("]},");
-		// }
-		// if (!graph.getLines().isEmpty())
-		// sb.deleteCharAt(sb.length() - 1);
-		// sb.append("]}");
 		return chartJson.toString();
-	}
-
-	private static String formatStop(Point2D stop) {
-		StringBuilder sb = new StringBuilder();
-		Object x = stop.getX();
-		sb.append("[").append(Utilities.commonConvertToJsonValue(x));
-		sb.append(",").append(stop.getY()).append("]");
-		return sb.toString();
 	}
 }
