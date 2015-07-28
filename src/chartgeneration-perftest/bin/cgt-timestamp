@@ -1,0 +1,96 @@
+#!/bin/sh
+function GetTimestamp()
+{
+#only get the first timestamp as the smallest one.
+jtl_flag=$(grep "[Ss]ample" "$1" | wc -l)
+if [ "$jtl_flag" -gt "0" ]
+then
+	#When file is jtl, do the process below
+	first_line_sample=$(grep "[Ss]ample" "$1" |grep -v 't="0"' | grep -v 'ts="0"' | head -1)
+	if [ -n "${first_line_sample}" ]
+	then
+		first_line_sample_arr=(${first_line_sample})
+		for i in ${!first_line_sample_arr[*]}
+		do
+			ts_flag=false
+			if [[ "${first_line_sample_arr[$i]}" =~ ^t= ]]
+        		then
+				t=$(echo "${first_line_sample_arr[$i]}" | tr -d '"'| cut -d "=" -f 2) 
+				ts_flag=true
+        		fi
+			if [[ "${first_line_sample_arr[$i]}" =~ ^ts= ]]
+			then
+				ts=$(echo "${first_line_sample_arr[$i]}" | tr -d '"'| cut -d "=" -f 2) 
+				ts_flag=true
+			fi
+			if [[ "${ts_flag}" =~ "true" ]] && [[ "$ts" -gt "0" ]] && [[ "$t" -gt "0" ]]
+			then
+        			timestamp=$(expr "$ts" + "$t")
+			else
+				continue
+			fi
+			echo "${timestamp}"
+		done
+	else
+		echo "Error"
+	fi
+elif [ "$(grep "xml version" $1 | wc -l)" -le "0" ]
+then 	
+	#when file is csv, do the process below
+	first_line_sample=$(grep -vw "0" "$1" | head -1)
+	if [ -n "${first_line_sample}" ]
+	then
+		timestamp=$(echo ${first_line_sample}|awk -F ',' '{print $1+$2}')
+		echo "${timestamp}"
+	else
+		echo "Error"
+	fi
+else
+	echo "Error"
+fi
+}
+#main function
+if [ "$#" -le 0 ] 
+then
+	#echo "Will checking files under the current dir"
+	input_dir=$(pwd)
+fi
+if [ -n "$1" ] && [ -d "$1" ] 
+then
+	input_dir=$1
+fi
+g_file_number=0
+g_timestamp[0]=0
+for file in "${input_dir}"/*
+do
+	file_base_name=`basename $file`
+	file_extension=${file_base_name##*.}
+	case $file_extension in
+        jtl|csv)
+		#echo "Will get the timestamp for $file"
+		if [ -s $file ]
+		then
+	        	result=$(GetTimestamp $file)
+			if [[ ! "${result}" =~ "Error" ]] 
+			then
+				g_timestamp[${g_file_number}]="$result"
+                                g_file_number=$(expr "${g_file_number}" + 1)
+			else
+				continue
+			fi
+		else
+			continue
+		fi
+		;;
+	*)
+		#echo "[Warning]Ignore the ${file}";;
+	esac
+done
+return_value=$(echo "${g_timestamp[*]}" | xargs -n1 | sort -n |head -1)
+if [ "${return_value}" -gt 0 ]
+then
+	echo "${return_value}"
+else
+	echo "[WARNING] All files are empty"
+	echo "Error"
+fi
