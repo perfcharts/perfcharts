@@ -24,7 +24,7 @@ public class JmeterAverageRTTrendChartTemplate extends Chart2DTemplateBase {
 				"Average Response Time", "ms", getLabelField(), xField,
 				rtField, new AverageCalculation(), true, false, false));
 		Chart2DConfig cfg = createConfig("Average Response Time Trend",
-				"Build No.", "Response Time", rules, AxisMode.INTEGER);
+				"Build", "Response Time", rules, AxisMode.INTEGER);
 		cfg.setXTickGenerator(new LongStringTickGenerator("^XTICK$",
 				getLabelField(), xField, buildIDField));
 		return cfg;

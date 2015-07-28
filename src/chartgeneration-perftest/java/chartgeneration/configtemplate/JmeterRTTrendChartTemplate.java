@@ -22,7 +22,7 @@ public class JmeterRTTrendChartTemplate extends Chart2DTemplateBase {
 		rules.add(new Chart2DSeriesConfigRule("^TX-(.+)$", "$1", "ms",
 				getLabelField(), xField, rtField, new EmptyCalculation(), true,
 				false, false));
-		Chart2DConfig cfg = createConfig("Response Time Trend", "Build No.", "Response Time", rules,
+		Chart2DConfig cfg = createConfig("Response Time Trend", "Build", "Response Time", rules,
 				AxisMode.INTEGER);
 		cfg.setXTickGenerator(new LongStringTickGenerator("^XTICK$", getLabelField(), xField, buildIDField));
 		cfg.setSeriesOrder(SeriesOrder.SERIES_LABEL);
