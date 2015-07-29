@@ -83,9 +83,11 @@ resource_monitoring_dir=$tmp_dir/resource_monitoring
 json_dir=$tmp_dir/subreports
 jmeter_json_file=$json_dir/Performance.json
 
-# parse raw data to data tables
-echo "remove tmp directory '$tmp_dir'" >&2
-rm "$tmp_dir" -Rf
+# cannot use -t and -l at the same time
+if [ -n "$end_time" ] && [ -n "$test_duration" ]; then
+	echo "$base_name: cannot specify '-t/--before' and '-l/--duration' at the same time" >&2
+	exit 1
+fi
 
 # check the start_offset & test_duration
 if [ -n "$start_offset" ] && [ ! -n "${start_offset//[0-9]/}" ] ; then
@@ -114,6 +116,10 @@ elif [ -n "$start_offset" ] ; then
 	echo "[Error] Please input the valid time for '-s'"
 	exit 1
 fi
+
+# parse raw data to data tables
+echo "remove tmp directory '$tmp_dir'" >&2
+rm "$tmp_dir" -Rf
 
 for file in "$input_dir"/*; do
 if [ -f "$file" ]; then
