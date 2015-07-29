@@ -18,6 +18,8 @@ show_usage() {
 	echo "	-f FROM_TIME	specify the start time of duration, like '2014-12-18 9:30:00'"
 	echo "	-t TO_TIME	specify the end time of duration, like '2014-12-18 17:30:00'"
 	echo "	-e EXCLUSION_PATTERN	specify the pattern (regular expression) which is used to exclude some transactions for average TPS & RT  calculation, like 'ping\.html'"
+ 	echo "	-s START_OFFSET (min) specify the 'Ramp-up Period' of [Loading] testing"
+	echo "	-l TEST_DURATION (min) specify the last time of [Loading] testing"
 }
 
 # initialize global variables
@@ -27,7 +29,7 @@ if ! [ -n "$CGT_LOG" ]; then export CGT_LOG=$CGT_HOME/log; fi
 if ! [ -n "$CGT_JAVA_COMMAND" ]; then export CGT_JAVA_COMMAND=java; fi
 input_dir=\.
 # deal with arguments
-while getopts d:o:z:f:t:e:? opt; do
+while getopts d:o:z:f:t:e:s:l:? opt; do
 	case $opt in
 	d) 
 		output_dir=$OPTARG;;
@@ -41,6 +43,10 @@ while getopts d:o:z:f:t:e:? opt; do
 		end_time=$OPTARG;;
 	e)
 		exclusion_pattern=$OPTARG;;
+	s) 
+		start_offset=$OPTARG;;
+	l)
+		test_duration=$OPTARG;;
 	?|*)	echo
 		show_usage
 		exit -1;;
@@ -57,6 +63,8 @@ if ! [ -n "$report_file" ]; then report_file=$output_dir/report.html; fi
 bin_dir=$CGT_HOME/bin
 cgt_js=$bin_dir/cgt-js
 cgt_monoreport=$bin_dir/cgt-monoreport
+#Add for cgt_timestamp
+cgt_timestamp=$bin_dir/cgt-timestamp
 perftest_parser=$CGT_LIB/chartgeneration-perftest-parser.jar
 perftest_generator=$CGT_LIB/chartgeneration-core.jar
 jmeter_default_config_file=$CGT_HOME/res/jmeter.chartconf
@@ -73,6 +81,34 @@ jmeter_json_file=$json_dir/Performance.json
 # parse raw data to data tables
 echo "remove tmp directory '$tmp_dir'" >&2
 rm "$tmp_dir" -Rf
+# check the start_offset & test_duration
+if [ -n "$start_offset" ] && [ ! -n "${start_offset//[0-9]/}" ] ; then
+	start_offset=$(expr "$start_offset" \* "60000")
+	if [ -n "$start_time" ] && [ $(date -d "$start_time" "+%s") ] ; then
+		start_time=$(expr "$start_offset" / 1000 + $(date -u -d "$start_time" "+%s"))
+		start_time=$(date -u -d @${start_time} +'%Y-%m-%d %H:%M:%S')
+	elif [ ! -n "$start_time" ] ; then
+		smallestts=$($cgt_timestamp "$input_dir")
+		if [[ ! ${smallestts} =~ "Error" ]] ; then
+			start_time=$((($smallestts + $start_offset) / 1000))
+			start_time=$(date -u -d @${start_time} +'%Y-%m-%d %H:%M:%S')
+		fi
+		if [ -n "$test_duration" ] && [ ! -n "${test_duration//[0-9]/}" ] ; then
+			end_time=$((($smallestts + $start_offset + $test_duration * 60000) / 1000))
+			end_time=$(date -u -d @${end_time} +'%Y-%m-%d %H:%M:%S')
+		elif [ -n "$test_duration" ] ; then
+			echo "[Error] Please input the valid time for '-l'"
+			exit 1
+		fi
+	else
+		echo "[Error] Input the valid date for '-f'"
+		exit 1
+	fi
+elif [ -n "$start_offset" ] ; then
+	echo "[Error] Please input the valid time for '-s'"
+	exit 1
+fi
+
 for file in "$input_dir"/*; do
 if [ -f "$file" ]; then
 	echo "parsing input file '$file'..." >&2
@@ -91,15 +127,17 @@ if [ -f "$file" ]; then
 		elif [ "$file_extension" == "zabbix" ]; then
 			parser_class=ZabbixParser
 		fi
-		#echo $CGT_JAVA_COMMAND "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone" \< "$file" \>\> "$resource_monitoring_dir/$server_name.csv"
-		if ! $CGT_JAVA_COMMAND "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone" < "$file" >> "$resource_monitoring_dir/$server_name.csv"; then
+		if ! $CGT_JAVA_COMMAND  "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone"  < "$file" >> "$resource_monitoring_dir/$server_name.csv"; then
+                        exit 1
+                fi
+		if ! $CGT_JAVA_COMMAND "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone"  < "$file" >> "$resource_monitoring_dir/$server_name.csv"; then
 			exit 1
 		fi
 		;;
-	jtl)
+	jtl|csv)
 		mkdir -p "$jmeter_dir"
 		parser_class=JmeterParser
-		if ! $CGT_JAVA_COMMAND "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone" < "$file" >> "$jmeter_data_table"; then
+		if ! $CGT_JAVA_COMMAND "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone"< "$file" >> "$jmeter_data_table"; then
 			exit 1
 		fi
 		;;
@@ -121,7 +159,7 @@ if [ -f "$jmeter_data_table" ]; then
 	encoded_exclusion_pattern=${exclusion_pattern//\\/\\\\}
 	encoded_exclusion_pattern=${encoded_exclusion_pattern////\\\/}
 	sed "s/<!--{command_line_exclusion_pattern}-->/${encoded_exclusion_pattern}/g" "$config_file_template" > "$jmeter_dir/jmeter.chartconf"
-	if ! $CGT_JAVA_COMMAND -jar "$perftest_generator" "$jmeter_dir/jmeter.chartconf" < "$jmeter_data_table" > "$jmeter_json_file"; then
+	if ! $CGT_JAVA_COMMAND -Xms2048m -Xmx2048m -jar "$perftest_generator" "$jmeter_dir/jmeter.chartconf" < "$jmeter_data_table" > "$jmeter_json_file"; then
 		exit 1
 	fi
 fi
