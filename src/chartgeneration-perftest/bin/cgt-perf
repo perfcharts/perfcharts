@@ -1,25 +1,24 @@
 #!/bin/bash
-
+base_name=`basename $0`
 # show usage of the script
 show_usage() {
-	local base_name=`basename $0`
 	echo 'This tool is used to generate a Performance & Resource Monitoring Report.'
 	echo "Usage: $base_name [OPTION...] [INPUT DIRECTORY]"
 	echo 'Examples:'
 	echo "	$base_name	# Generate a report from current directory"
-	echo "	$base_name -z GMT+8	# Generate a report from current directory with specifying the time zone China Standard Time (GMT+8)"
+	echo "	$base_name -z GMT+8	# Generate a report from current directory with specifying the fallback time zone as China Standard Time (GMT+8)"
 	echo "	$base_name input/	# Generate a report from directory 'input/'"
-	echo "	$base_name -d output/ -o report.html input/	# Generate report 'report.html' from 'input/', and place generated files into 'output/'"
+	echo "	$base_name -d output/ -o report.html input/	# Generate report 'report.html' from 'input/', and place generated files into default 'output/'"
 	echo
 	echo 'Options:'
-	echo '	-d DIRECTORY	specify the output directory'
-	echo "	-o FILE		the file name of generated report, default to 'report.html'"
-	echo "	-z TIME_ZONE	specify the time zone, like 'GMT+8'"
-	echo "	-f FROM_TIME	specify the start time of duration, like '2014-12-18 9:30:00'"
-	echo "	-t TO_TIME	specify the end time of duration, like '2014-12-18 17:30:00'"
-	echo "	-e EXCLUSION_PATTERN	specify the pattern (regular expression) which is used to exclude some transactions for average TPS & RT  calculation, like 'ping\.html'"
- 	echo "	-s START_OFFSET (min) specify the 'Ramp-up Period' of [Loading] testing"
-	echo "	-l TEST_DURATION (min) specify the last time of [Loading] testing"
+	echo '	-d, --output-dir=DIRECTORY	write generated files into DIRECTORY'
+	echo "	-o, --output-file=FILE		write generated report to FILE"
+	echo "	-z, --time-zone=TIME_ZONE	fallback TIME_ZONE, like 'GMT+8'"
+	echo "	-f, --after=TIME		extract testing results after TIME, like '2014-12-18 9:30:00'"
+	echo "	-t, --before=TIME		extract testing results before TIME, like '2014-12-18 17:30:00'"
+	echo "	-e, --exclude=PATTERN		specify the exclude pattern for average TPS & RT calculation, like 'ping\.html'"
+ 	echo "	-s, --offset=MINUTES		specify the 'Ramp-up Period' of [Loading] testing"
+	echo "	-l, --duration=MINUTES		specify the lasting time of [Loading] testing"
 }
 
 # initialize global variables
@@ -29,30 +28,36 @@ if ! [ -n "$CGT_LOG" ]; then export CGT_LOG=$CGT_HOME/log; fi
 if ! [ -n "$CGT_JAVA_COMMAND" ]; then export CGT_JAVA_COMMAND=java; fi
 input_dir=\.
 # deal with arguments
-while getopts d:o:z:f:t:e:s:l:? opt; do
-	case $opt in
-	d) 
-		output_dir=$OPTARG;;
-	o) 
-		report_file=$OPTARG;;
-	z)
-		time_zone=$OPTARG;;
-	f)
-		start_time=$OPTARG;;
-	t)
-		end_time=$OPTARG;;
-	e)
-		exclusion_pattern=$OPTARG;;
-	s) 
-		start_offset=$OPTARG;;
-	l)
-		test_duration=$OPTARG;;
-	?|*)	echo
-		show_usage
-		exit -1;;
+getopt_results=`getopt -n "$base_name" -o d:o:z:f:t:e:s:l:h -l output-dir:,output-file:,time-zone:,after:,before:,exclude:,offset:,duration:,help -- "$@"`
+if [ $? -ne 0 ]; then
+	echo "Try '$base_name -h' or '$base_name --help' for more information." >&2
+	exit 1
+fi
+eval set -- "$getopt_results"
+while true; do
+	case $1 in
+	-d|--output-dir) 
+		output_dir=$2; shift 2;;
+	-o|--output-file) 
+		report_file=$2; shift 2;;
+	-z|--time-zone)
+		time_zone=$2; shift 2;;
+	-f|--after)
+		start_time=$2; shift 2;;
+	-t|--before)
+		end_time=$2; shift 2;;
+	-e|--exclude)
+		exclusion_pattern=$2; shift 2;;
+	-s|--offset) 
+		start_offset=$2; shift 2;;
+	-l|--duration)
+		test_duration=$2; shift 2;;
+	-h|--help)	show_usage; exit 0;;
+	--)	shift; break;;
+	*)	echo "Try '$base_name -h' or '$base_name --help' for more information." >&2; exit -1;;
 	esac
 done
-shift $[$OPTIND - 1]
+
 if [ -n "$1" ]; then
 	input_dir=$1
 fi
@@ -81,6 +86,7 @@ jmeter_json_file=$json_dir/Performance.json
 # parse raw data to data tables
 echo "remove tmp directory '$tmp_dir'" >&2
 rm "$tmp_dir" -Rf
+
 # check the start_offset & test_duration
 if [ -n "$start_offset" ] && [ ! -n "${start_offset//[0-9]/}" ] ; then
 	start_offset=$(expr "$start_offset" \* "60000")
