@@ -63,14 +63,14 @@ g_file_number=0
 g_timestamp[0]=0
 for file in "${input_dir}"/*
 do
-	file_base_name=`basename $file`
+	file_base_name=$(basename "$file")
 	file_extension=${file_base_name##*.}
-	case $file_extension in
+	case "$file_extension" in
         jtl|csv)
 		#echo "Will get the timestamp for $file"
-		if [ -s $file ]
+		if [ -s "$file" ]
 		then
-	        	result=$(GetTimestamp $file)
+	        	result=$(GetTimestamp "$file")
 			if [[ ! "${result}" =~ "Error" ]] 
 			then
 				g_timestamp[${g_file_number}]="$result"
@@ -91,6 +91,6 @@ if [ "${return_value}" -gt 0 ]
 then
 	echo "${return_value}"
 else
-	echo "[WARNING] All files are empty"
+	#files are empty
 	echo "Error"
 fi

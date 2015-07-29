@@ -18,8 +18,8 @@ show_usage() {
 	echo "	-f FROM_TIME	specify the start time of duration, like '2014-12-18 9:30:00'"
 	echo "	-t TO_TIME	specify the end time of duration, like '2014-12-18 17:30:00'"
 	echo "	-e EXCLUSION_PATTERN	specify the pattern (regular expression) which is used to exclude some transactions for average TPS & RT  calculation, like 'ping\.html'"
-	echo "	-s START_OFFSET specify the 'Ramp-up Period' of [Loading] testing. Perfcharts will ignore the test results in the period"
-	echo "	-l TEST_DURATION specify the last time of [Loading] testing. Perfcharts will anaylze the test results from 'START_OFFSET'+'START_OFFSET'+'TEST_DURATION'"
+ 	echo "	-s START_OFFSET (min) specify the 'Ramp-up Period' of [Loading] testing"
+	echo "	-l TEST_DURATION (min) specify the last time of [Loading] testing"
 }
 
 # initialize global variables
@@ -81,20 +81,32 @@ jmeter_json_file=$json_dir/Performance.json
 # parse raw data to data tables
 echo "remove tmp directory '$tmp_dir'" >&2
 rm "$tmp_dir" -Rf
-# check the start_offset and get the smallestts
-if [ -n "$start_offset" ] && [ -n "$test_duration" ] && [ !-n "$start_time"] ; then
-	smallestts=$($cgt_timestamp "$input_dir")
-	start_time_str=$(expr "$smallestts" + "$start_offset")
-	start_time=$(expr $start_time_str / 1000)
-	start_time=$(date -u -d @${start_time} +'%Y-%m-%d %H:%M:%S')
-	echo $start_time
-	end_time_str=$(expr "$start_time_str" + "$test_duration")
-	end_time_str=$(expr $end_time_str / 1000)
-	end_time=$(date -u -d @${end_time_str} +'%Y-%m-%d %H:%M:%S')
-	echo $end_time
-elif [ -n "$start_time" ]; then
-	echo "[Error] '-s' can not be used with '-f'"
-	exit
+# check the start_offset & test_duration
+if [ -n "$start_offset" ] && [ ! -n "${start_offset//[0-9]/}" ] ; then
+	start_offset=$(expr "$start_offset" \* "60000")
+	if [ -n "$start_time" ] && [ $(date -d "$start_time" "+%s") ] ; then
+		start_time=$(expr "$start_offset" / 1000 + $(date -u -d "$start_time" "+%s"))
+		start_time=$(date -u -d @${start_time} +'%Y-%m-%d %H:%M:%S')
+	elif [ ! -n "$start_time" ] ; then
+		smallestts=$($cgt_timestamp "$input_dir")
+		if [[ ! ${smallestts} =~ "Error" ]] ; then
+			start_time=$((($smallestts + $start_offset) / 1000))
+			start_time=$(date -u -d @${start_time} +'%Y-%m-%d %H:%M:%S')
+		fi
+		if [ -n "$test_duration" ] && [ ! -n "${test_duration//[0-9]/}" ] ; then
+			end_time=$((($smallestts + $start_offset + $test_duration * 60000) / 1000))
+			end_time=$(date -u -d @${end_time} +'%Y-%m-%d %H:%M:%S')
+		elif [ -n "$test_duration" ] ; then
+			echo "[Error] Please input the valid time for '-l'"
+			exit 1
+		fi
+	else
+		echo "[Error] Input the valid date for '-f'"
+		exit 1
+	fi
+elif [ -n "$start_offset" ] ; then
+	echo "[Error] Please input the valid time for '-s'"
+	exit 1
 fi
 
 for file in "$input_dir"/*; do
