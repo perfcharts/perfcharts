@@ -21,7 +21,7 @@ public class JmeterTotalTPSChartTemplate extends
 	public Chart2DConfig generateChartConfig() {
 		int interval = getInterval();
 		if (interval < 1)
-			interval = 10000;
+			interval = 1000;
 		List<Chart2DSeriesConfigRule> rules;
 		FieldSelector timestampField = new IndexFieldSelector(1);
 		FieldSelector rtField = new IndexFieldSelector(5);
@@ -29,20 +29,22 @@ public class JmeterTotalTPSChartTemplate extends
 		rules = new ArrayList<Chart2DSeriesConfigRule>();
 		Chart2DSeriesConfigRule rule1 = new Chart2DSeriesConfigRule(
 				"^TX-(.+)-S$", "Transations-Success", "", getLabelField(),
-				xField, null, new CountCalculation(interval, 1.0, false));
+				xField, null, new CountCalculation(interval, 1000.0 / interval, false));
 		if (exclusionPattern != null && !exclusionPattern.isEmpty())
 			rule1.setExclusionRule(new Chart2DSeriesExclusionRule("$1",
 					exclusionPattern));
 		rules.add(rule1);
 		Chart2DSeriesConfigRule rule2 = new Chart2DSeriesConfigRule(
 				"^TX-(.+)-F$", "Transations-Failure", "", getLabelField(),
-				xField, null, new CountCalculation(interval, 1.0, true));
+				xField, null, new CountCalculation(interval, 1000.0 / interval, true));
 		if (exclusionPattern != null && !exclusionPattern.isEmpty())
 			rule2.setExclusionRule(new Chart2DSeriesExclusionRule("$1",
 					exclusionPattern));
 		rules.add(rule2);
-		return createConfig("Total TPS over Time", "Time", "TPS", rules,
+		Chart2DConfig cfg = createConfig("Total TPS over Time", "Time", "TPS", rules,
 				AxisMode.TIME);
+		cfg.setInterval(interval);
+		return cfg;
 	}
 
 	public String getExclusionPattern() {

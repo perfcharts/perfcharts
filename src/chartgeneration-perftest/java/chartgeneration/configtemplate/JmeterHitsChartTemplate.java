@@ -17,7 +17,7 @@ public class JmeterHitsChartTemplate extends Chart2DTemplateWithIntervalBase {
 	public Chart2DConfig generateChartConfig() {
 		int interval = getInterval();
 		if (interval < 1)
-			interval = 10000;
+			interval = 1000;
 		List<Chart2DSeriesConfigRule> rules;
 		FieldSelector timestampField = new IndexFieldSelector(1);
 		FieldSelector yField = new IndexFieldSelector(2);
@@ -25,9 +25,11 @@ public class JmeterHitsChartTemplate extends Chart2DTemplateWithIntervalBase {
 		rules = new ArrayList<Chart2DSeriesConfigRule>();
 		rules.add(new Chart2DSeriesConfigRule("^HIT$", "Hits", "",
 				getLabelField(), timestampField, yField, new CountCalculation(
-						interval)));
-		return createConfig("Hits over Time", "Time",
+				interval, 1000.0 / interval, false)));
+		Chart2DConfig cfg = createConfig("Hits over Time", "Time",
 				"Hits", rules, AxisMode.TIME);
+		cfg.setInterval(interval);
+		return cfg;
 	}
 
 }
