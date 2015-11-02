@@ -23,7 +23,7 @@ public class NMONParser implements DataParser {
         Map<Integer, Long> timeTable = new HashMap<Integer, Long>(16000);
         //Map<String, String> metaInfo = new HashMap<String, String>(30);
         // TimeZone utcZone = TimeZone.getTimeZone("UTC");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("H:m:s d-MMM-y");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("H:m:s d-MMM-y", Locale.ENGLISH);
         // timeFormat.setTimeZone(utcZone);
 
         final Map<String, Integer> diskColumnMap = new HashMap<String, Integer>(4);

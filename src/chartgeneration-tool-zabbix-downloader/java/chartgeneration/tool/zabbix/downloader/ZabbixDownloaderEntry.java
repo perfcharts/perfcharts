@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Properties;
-import java.util.Scanner;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.logging.Logger;
 
 import chartgeneration.tool.zabbix.downloader.ZabbixDownloader.ZabbixAPIException;
@@ -19,7 +16,7 @@ public class ZabbixDownloaderEntry {
 			.getLogger(ZabbixDownloaderEntry.class.getName());
 
 	private final static SimpleDateFormat sdf = new SimpleDateFormat(
-			"y-M-d h:m:s");
+			"y-M-d h:m:s", Locale.ENGLISH);
 
 	public static void main(String[] args) throws IOException, ParseException,
 			ZabbixAPIException {

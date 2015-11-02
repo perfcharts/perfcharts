@@ -3,6 +3,7 @@ package chartgeneration.parser;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import chartgeneration.common.AppData;
@@ -30,7 +31,7 @@ public class Settings {
 	 * time format for start time and end time
 	 */
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-			"y-M-d h:m:s");
+			"y-M-d h:m:s", Locale.ENGLISH);
 
 	/**
 	 * private constructor

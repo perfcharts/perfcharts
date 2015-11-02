@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import chartgeneration.common.AppData;
@@ -24,7 +25,7 @@ import chartgeneration.common.AppData;
  *
  */
 public class CPULoadParser implements DataParser {
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("y-M-d H:m:s");
+	private SimpleDateFormat timeFormat = new SimpleDateFormat("y-M-d H:m:s", Locale.ENGLISH);
 
 	public void parse(InputStream in, OutputStream out) throws IOException,
 			ParseException {
