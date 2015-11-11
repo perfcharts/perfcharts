@@ -22,9 +22,9 @@ show_usage() {
 }
 
 # initialize global variables
-if ! [ -n "$CGT_HOME" ]; then export CGT_HOME=$(cd `dirname "$0"`; cd ..; pwd); fi
-if ! [ -n "$CGT_LIB" ]; then export CGT_LIB=$CGT_HOME/lib; fi
-if ! [ -n "$CGT_LOG" ]; then export CGT_LOG=$CGT_HOME/log; fi
+if ! [ -n "$CGT_HOME" ]; then export CGT_HOME=$(cd "$(dirname -- "$(readlink -e -- "$0")")"; cd ..; pwd); fi
+if ! [ -n "$CGT_LIB" ]; then export CGT_LIB="$CGT_HOME"/lib; fi
+if ! [ -n "$CGT_LOG" ]; then export CGT_LOG="log"; fi
 if ! [ -n "$CGT_JAVA_COMMAND" ]; then export CGT_JAVA_COMMAND=java; fi
 input_dir=\.
 # deal with arguments
