@@ -14,5 +14,5 @@ bin/*
 res/*
 /bin/
 /.idea/
-
+/dist/
 src/chartgeneration-perftest/res/data.js
