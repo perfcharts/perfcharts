@@ -16,3 +16,4 @@ res/*
 /.idea/
 /dist/
 src/chartgeneration-perftest/res/data.js
+*.iml
