@@ -1,0 +1,63 @@
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+    compile project(':generator')
+	compile 'org.json:json:20150729'
+	compile 'org.apache.commons:commons-csv:1.2'
+}
+
+jar {
+    doFirst{
+        baseName = 'perfcharts-perftest'
+        manifest {
+            attributes 'Class-Path' : configurations.runtime.collect { it.getName() }.join(' ')
+        }
+    }
+}
+
+task buildMonoReportTemplate(type: Exec) {
+	commandLine 'bash', '-e', 'tools/generate_mono_report_template.sh'
+	doFirst {
+        file("$buildDir/dynamicAssets/res").mkdirs()
+		standardOutput = new FileOutputStream(file("$buildDir/dynamicAssets/res/report-mono.template.html"))
+	}
+}
+
+task buildReportTemplate(type: Exec) {
+	commandLine 'bash', '-e', 'tools/generate_mono_report_template.sh'
+	doFirst {
+        file("$buildDir/dynamicAssets/res").mkdirs()
+		standardOutput = new FileOutputStream(file("$buildDir/dynamicAssets/res/report.template.html"))
+	}
+}
+
+assemble.dependsOn buildReportTemplate, buildMonoReportTemplate
+
+
+apply plugin: 'distribution'
+
+distributions {
+    main {
+        contents {
+            from("$buildDir/dynamicAssets"){
+                into('')
+            }
+            from (configurations.runtime){
+                into('lib')
+            }
+            from (jar){
+                into('lib')
+            }
+        }
+    }
+}

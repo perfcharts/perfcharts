@@ -1,0 +1,119 @@
+#!/bin/bash
+
+# show usage of the script
+show_usage() {
+	local base_name=`basename $0`
+	echo 'This tool is used to generate a Performance & Resource Comparison Report.'
+	echo "Usage: $base_name [INPUT_DIRECTORY]"
+	echo 'Examples:'
+	echo "	$base_name	# Generate a report from current directory"
+	echo "	$base_name input/	# Generate a report from directory 'input/'"
+	echo "	$base_name -d output/ -o report.html input/	# Generate report 'report.html' from 'input/', and place generated files into 'output/'"
+	echo
+	echo 'Options:'
+	echo '	-?	help'
+	echo '	-d DIRECTORY	specify the output directory'
+	echo "	-o FILE		the file name of generated report, default to 'report.html'"
+	echo 
+	echo '.perfcmp format:'
+	echo 'SOURCE,1,unused,a.json
+DEST,2,unused,b.json'
+}
+
+# initialize global variables
+[ -z "$CGT_HOME" ] && export CGT_HOME=$(cd "$(dirname -- "$(readlink -e -- "$0")")"; cd ..; pwd)
+[ -z "$CGT_LIB" ] && export CGT_LIB="$CGT_HOME"/lib
+[ -z "$CGT_JAVA_COMMAND" ] && export CGT_JAVA_COMMAND=java
+
+input_dir=\.
+
+# deal with arguments
+while getopts d:o:? opt; do
+	case $opt in
+	d) 
+		output_dir=$OPTARG;;
+	o) 
+		report_file=$OPTARG;;
+	?|*)	echo
+		show_usage
+		exit -1;;
+	esac
+done
+shift $[$OPTIND - 1]
+if [ -n "$1" ]; then
+	input_dir="$1"
+fi
+
+if ! [ -n "$output_dir" ]; then output_dir="$input_dir"/output; fi
+if ! [ -n "$report_file" ]; then report_file="$output_dir"/report.html; fi
+
+bin_dir="$CGT_HOME"/bin
+cgt_js="$bin_dir"/cgt-js
+cgt_monoreport="$bin_dir"/cgt-monoreport
+
+perftest_parser="$CGT_LIB"/perfcharts-perftest-parser.jar
+perftest_generator="$CGT_LIB"/perfcharts-generator.jar
+perfcmp_default_config_file="$CGT_HOME"/res/perfcmp.template.chartconf
+report_template="$CGT_HOME"/res/report_mono.html
+
+tmp_dir="$output_dir"/data
+perfcmp_dir="$tmp_dir"/perfcmp
+json_dir="$tmp_dir"/subreports
+report_template="$CGT_HOME"/res/report_mono.html
+
+# parse raw data to data tables
+echo "remove tmp directory '$tmp_dir'" >&2
+rm "$tmp_dir" -Rf
+for file in "$input_dir"/*; do
+if [ -f "$file" ]; then
+	file_base_name=`basename "$file"`
+	file_extension=${file_base_name##*.}
+	file_bare_name=${file_base_name%.*}
+	#echo ext of $file_base_name is $file_extension
+	case $file_extension in
+	perfcmp|rescmp)
+		echo "parsing input file '$file'..." >&2
+		mkdir -p "$perfcmp_dir"
+		if [ "$file_extension" == "perfcmp" ]; then
+			parser_class=PerformanceComparisonParser
+		elif [ "$file_extension" == "rescmp" ]; then
+			parser_class=ResourceComparisonParser
+		fi
+		if ! $CGT_JAVA_COMMAND -jar "$perftest_parser" "$parser_class" < "$file" >> "$perfcmp_dir/$file_bare_name.csv"; then
+			exit 1
+		fi
+		;;
+	chartconf) ;;
+	*) echo "[Warning] The file'$file' is ignored, because I don't know what it is.";;
+	esac
+fi
+done
+
+# generate perfcmp reports
+mkdir -p "$json_dir"
+for data_table in "$perfcmp_dir"/*.csv; do
+if [ -f "$data_table" ]; then
+	file_base_name=`basename "$data_table"`
+	file_bare_name=${file_base_name%.*}
+	unset config_file_template
+	if [ -f "$input_dir/$file_bare_name.chartconf" ]; then
+		config_file_template=$input_dir/$file_bare_name.chartconf
+	elif [ -f "$input_dir/perfcmp.template.chartconf" ]; then
+		config_file_template=$input_dir/perfcmp.template.chartconf
+	else
+		config_file_template=$perfcmp_default_config_file
+	fi
+	encoded_cmp_desc=${file_bare_name//\\/\\\\}
+	encoded_cmp_desc=${file_bare_name//\//\\\/}
+	if ! sed "s/<!--{cmp_desc}-->/${encoded_cmp_desc}/g" "$config_file_template" > "$perfcmp_dir/$file_bare_name.chartconf"; then exit 1; fi
+	#if ! cp "$config_file_template" "$perfcmp_dir/$file_bare_name.chartconf"; then exit 1; fi
+	if ! $CGT_JAVA_COMMAND -jar "$perftest_generator" "$perfcmp_dir/$file_bare_name.chartconf" < "$data_table" > "$json_dir/$file_bare_name.json"; then exit 1; fi
+fi
+done
+
+
+# generate final report
+js_file="$tmp_dir"/data.js
+"$cgt_js" "$json_dir" "$js_file"
+"$cgt_monoreport" "$js_file" "$report_template" "$report_file"
+

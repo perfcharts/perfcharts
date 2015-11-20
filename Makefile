@@ -1,37 +1,47 @@
 NAME=perfcharts
-VERSION=0.5.2
+VERSION=0.6.0
+
+RPMBUILD_SPEC=perfcharts.spec
 DIST_DIR=dist
 
-.PHONY: compile all source tar clean rpm srpm help
+SRC_DEST_DIR=$(NAME)-$(VERSION)
+TARBALL_DEST_NAME=$(SRC_DEST_DIR).tar.gz
+
+.PHONY: help build clean rpm srpm src tarball
+
+build:
+	gradle explodedDist
 
 help:
-	@echo 'make [compile|all|source|tar|clean|rpm|srpm|help]'
-
-compile:
-	src/build.sh
-
-all: tar srpm rpm
-
-source:
-	mkdir -p $(DIST_DIR)/$(NAME)
-	cp -pr src $(DIST_DIR)/$(NAME)
-	cp -pr LICENSE $(DIST_DIR)/$(NAME)
-	cp -pr README.md $(DIST_DIR)/$(NAME)
-	cp -pr perfcharts.spec $(DIST_DIR)/$(NAME)
-
-tar: source
-	cd $(DIST_DIR) && tar -czvf $(NAME)-$(VERSION).tar.gz $(NAME)
+	@echo 'make [ build | clean | rpm | srpm | src | tarball ]'
 
 clean:
-	rm -rf $(DIST_DIR)
+	gradle clean
+	rm -rf $(DIST_DIR) build
 
-rpm: tar
+src:
+	rm -rf $(DIST_DIR)/$(SRC_DEST_DIR)
+	mkdir -p $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -prf generator $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -prf perftest $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -prf perftest-parser $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -prf tool-zabbix-downloader $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -pf Makefile $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -pf *.gradle $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -pf $(RPMBUILD_SPEC) $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -pf README.md $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -pf LICENSE $(DIST_DIR)/$(SRC_DEST_DIR)
+
+tarball: src
+	cd $(DIST_DIR) && tar -czvf $(TARBALL_DEST_NAME) $(SRC_DEST_DIR)
+
+rpm: tarball
 	mkdir -p $(DIST_DIR)
-	rpmbuild -tb $(DIST_DIR)/$(NAME)-$(VERSION).tar.gz
+	rpmbuild -tb $(DIST_DIR)/$(TARBALL_DEST_NAME)
 	cp -f ~/rpmbuild/RPMS/noarch/$(NAME)-$(VERSION)-* $(DIST_DIR)
 
-srpm: tar
+srpm: tarball
 	mkdir -p $(DIST_DIR)
-	rpmbuild -ts $(DIST_DIR)/$(NAME)-$(VERSION).tar.gz
+	rpmbuild -ts $(DIST_DIR)/$(TARBALL_DEST_NAME)
 	cp -f ~/rpmbuild/SRPMS/$(NAME)-$(VERSION)-* $(DIST_DIR)
 

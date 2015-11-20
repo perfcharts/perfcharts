@@ -22,7 +22,7 @@ The tool contains three main components: Parser, Generator, and Driver Program.
 
 * _Parser_ reads raw data, extracts the part of data we are interested in, and produces data table (in CSV format).
 * _Generator_ generates charts from data tables according to configuration files that is defined by users and specifies which charts should be produced.
-* _Driver Program_ controls the overall progress of running.
+* _Helpers_ scripts that helps you generate a report easier.
 
 Steps to Generate a Perf-test Report
 ----------------------------------
@@ -135,7 +135,7 @@ Or you can run cgt-trend INPUT_DIR to indicate the input directory manually:
 
 		cgt-trend /home/cgt/input/
 
-All generated files will be placed into the sub-directory "report" of your input directory. This is the default location for storing all output files. To specify another output directory, use -d option:
+All generated files will be placed into the subdirectory "output" in your input directory. This is the default location for storing all output files. To specify another output directory, use -d option:
 
 		cgt-trend -d home/cgt/output/ /home/cgt/input/
 
@@ -145,25 +145,29 @@ The file "report.html" in output directory is what you need. To specify another 
 
 Build
 -----------
-1. This software uses [Apache Ant](http://ant.apache.org/) for compiling and packaging. Please install Apache Ant first.
+1. This software uses [Gradle](http://gradle.org/) to compile the Java source and [GNU Make](https://www.gnu.org/software/make/) to build RPM packages and so on. To build this software, please install gradle and make in advance.
 
 - for RHEL/CentOS/Fedora users
 		
-		sudo yum install ant
+		yum install gradle make
 
 - for Debian/Ubuntu users
 		
-		sudo aptitude install ant
+		apt-get install gradle make
 
-2. Enter src directory, and build.
+2. Run `make` or `gradle explodedDist` to build this software. You can find compiled package in `build/dist/`
 
-		cd src
-		ant
-		chmod +x ../bin/*
-
+3. To build a RPM or source RPM package, just run `make rpm` or `make srpm` corespondly.
 
 Release Log
 -----------
+### v0.6.0 ###
+- move build system from Ant to Gradle
+- rename package name from 'chartgeneration' to 'perfcharts'
+
+### v0.5.2 ###
+- bugfix: parser crashes under some locale environment
+
 ### v0.5.1 ###
 - add support perf-cmp report
 - add new style summary table and bar chart support

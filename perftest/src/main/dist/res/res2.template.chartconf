@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cgtConfig version="0.1" classPath="perfcharts-perftest.jar">
+	<chartConfigTemplate class="CustomZabbixChartTemplate">		
+		<subtitle><!--{server_name}--></subtitle>
+		<interval>180000</interval>
+	</chartConfigTemplate>
+</cgtConfig>

@@ -1,0 +1,39 @@
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compile project(':generator')
+	compile 'org.apache.commons:commons-csv:1.2'
+}
+
+jar.doFirst{
+    baseName = 'perfcharts-perftest-parser'
+    manifest {
+        attributes 'Main-Class' : 'perfcharts.perftest.parser.PerftestParserLauncher',
+                'Class-Path' : configurations.runtime.collect { it.getName() }.join(' ')
+    }
+}
+
+apply plugin: 'distribution'
+
+distributions {
+	main {
+		contents {
+			from (configurations.runtime){
+				into('lib')
+			}
+			from (jar){
+				into('lib')
+			}
+		}
+	}
+}

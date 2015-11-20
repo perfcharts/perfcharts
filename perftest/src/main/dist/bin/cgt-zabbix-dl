@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# show usage of the script
+show_usage() {
+	local base_name=`basename $0`
+	echo 'This tool is used to download resource monitoring data from a Zabbix server.'
+	echo
+	echo "Usage: $base_name -a API_URL -u USER -h HOSTS [OPTION...] [OUTPUT_DIRECTORY]"
+	echo
+	echo "	-a API_URL	URL of Zabbix API, like 'http://localhost/zabbix/api_jsonrpc.php'. For https connections, make sure your CA is trusted by your host, or the outgoing connections will be refused. If you are using self-signed certificates, import your CA to the keystore for your Java installation. See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html"
+	echo "	-u USER		Zabbix user name, like 'Admin'"
+	echo "	-h HOSTS	A semicolon seperated list indicating hosts to be monitored, like 'dbserver;webserver'. NOTE: Specify host names you set in 'Zabbix' - 'Configuration' - 'Hosts', not DNS names or IP addresses"
+	echo
+	echo 'Options:'
+	echo '	OUTPUT_DIRECTORY	output directory'
+	echo "	-z TIME_ZONE	time zone for FROM_TIME & TO_TIME, like 'GMT+8'. The default value is 'UTC'"
+	echo "	-f FROM_TIME	start time of duration, like '2014-12-18 9:30:00'"
+	echo "	-t TO_TIME	end time of duration, like '2014-12-18 17:30:00'"
+	echo "	-k ITEM_KEYS	item keys to monitor, like ''system.cpu.num;system.cpu.load;system.cpu.util'"
+	echo
+	echo 'Examples:'
+	echo "	$base_name -a http://localhost/zabbix/api_jsonrpc.php -u Admin -h 'Zabbix server;DB server;Web server -z UTC -f '2014-12-18 9:30:00' -t '2014-12-18 17:30:00' # Download Zabbix monitoring data to current directory between specified period."
+
+}
+
+# initialize global variables
+[ -z "$CGT_HOME" ] && export CGT_HOME=$(cd "$(dirname -- "$(readlink -e -- "$0")")"; cd ..; pwd)
+[ -z "$CGT_LIB" ] && export CGT_LIB="$CGT_HOME"/lib
+[ -z "$CGT_JAVA_COMMAND" ] && export CGT_JAVA_COMMAND=java
+
+input_dir=\.
+# deal with arguments
+while getopts a:u:h:d:z:f:t:k:? opt; do
+	case $opt in
+	a) 
+		zabbix_api_url=$OPTARG;;
+	u)
+		zabbix_user=$OPTARG;;
+	h)
+		zabbix_hosts=$OPTARG;;
+	d) 
+		output_dir=$OPTARG;;
+	z)
+		time_zone=$OPTARG;;
+	f)
+		start_time=$OPTARG;;
+	t)
+		end_time=$OPTARG;;
+	k)
+		item_keys=$OPTARG;;
+	?|*)	echo
+		show_usage
+		exit -1;;
+	esac
+done
+shift $[$OPTIND - 1]
+if [ -n "$1" ]; then
+	output_dir=$1
+fi
+
+if ! [ -n "$zabbix_api_url" ] || ! [ -n "$zabbix_user" ] || ! [ -n "$zabbix_hosts" ]; then
+	show_usage
+	exit 1
+fi
+
+if ! [ -n "$output_dir" ]; then output_dir=$input_dir/output; fi
+if ! [ -n "$report_file" ]; then report_file=$output_dir/report.html; fi
+
+bin_dir=$CGT_HOME/bin
+lib_zabbix_downloader=$CGT_LIB/chartgeneration-tool-zabbix-downloader.jar
+
+if ! $CGT_JAVA_COMMAND "-DAPI_URL=$zabbix_api_url" "-Duser=$zabbix_user" "-Dhosts=$zabbix_hosts" "-Dtime_zone=$time_zone" "-Dstart_time=$start_time" "-Dend_time=$end_time" "-Ditem_keys=$item_keys" -jar "$lib_zabbix_downloader" "$output_dir"; then
+	exit 1
+fi
+

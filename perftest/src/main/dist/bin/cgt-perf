@@ -1,0 +1,207 @@
+#!/bin/bash
+base_name=`basename $0`
+# show usage of the script
+show_usage() {
+	echo 'This tool is used to generate a Performance & Resource Monitoring Report.'
+	echo "Usage: $base_name [OPTION...] [INPUT DIRECTORY]"
+	echo 'Examples:'
+	echo "	$base_name	# Generate a report from current directory"
+	echo "	$base_name -z GMT+8	# Generate a report from current directory with specifying the fallback time zone as China Standard Time (GMT+8)"
+	echo "	$base_name input/	# Generate a report from directory 'input/'"
+	echo "	$base_name -d output/ -o report.html input/	# Generate report 'report.html' from 'input/', and place generated files into default 'output/'"
+	echo
+	echo 'Options:'
+	echo '	-d, --output-dir=DIRECTORY	write generated files into DIRECTORY'
+	echo "	-o, --output-file=FILE		write generated report to FILE"
+	echo "	-z, --time-zone=TIME_ZONE	fallback TIME_ZONE, like 'GMT+8'"
+	echo "	-f, --after=TIME		extract testing results after TIME, like '2014-12-18 9:30:00'"
+	echo "	-t, --before=TIME		extract testing results before TIME, like '2014-12-18 17:30:00'"
+	echo "	-e, --exclude=PATTERN		specify the exclude pattern for average TPS & RT calculation, like 'ping\.html'"
+ 	echo "	-s, --offset=MINUTES		specify the 'Ramp-up Period' of [Loading] testing"
+	echo "	-l, --duration=MINUTES		specify the lasting time of [Loading] testing"
+}
+
+# initialize global variables
+[ -z "$CGT_HOME" ] && export CGT_HOME=$(cd "$(dirname -- "$(readlink -e -- "$0")")"; cd ..; pwd)
+[ -z "$CGT_LIB" ] && export CGT_LIB="$CGT_HOME"/lib
+[ -z "$CGT_JAVA_COMMAND" ] && export CGT_JAVA_COMMAND=java
+
+input_dir=\.
+# deal with arguments
+getopt_results=`getopt -n "$base_name" -o d:o:z:f:t:e:s:l:h -l output-dir:,output-file:,time-zone:,after:,before:,exclude:,offset:,duration:,help -- "$@"`
+if [ $? -ne 0 ]; then
+	echo "Try '$base_name -h' or '$base_name --help' for more information." >&2
+	exit 1
+fi
+eval set -- "$getopt_results"
+while true; do
+	case $1 in
+	-d|--output-dir) 
+		output_dir=$2; shift 2;;
+	-o|--output-file) 
+		report_file=$2; shift 2;;
+	-z|--time-zone)
+		time_zone=$2; shift 2;;
+	-f|--after)
+		start_time=$2; shift 2;;
+	-t|--before)
+		end_time=$2; shift 2;;
+	-e|--exclude)
+		exclusion_pattern=$2; shift 2;;
+	-s|--offset) 
+		start_offset=$2; shift 2;;
+	-l|--duration)
+		test_duration=$2; shift 2;;
+	-h|--help)	show_usage; exit 0;;
+	--)	shift; break;;
+	*)	echo "Try '$base_name -h' or '$base_name --help' for more information." >&2; exit -1;;
+	esac
+done
+
+if [ -n "$1" ]; then
+	input_dir="$1"
+fi
+
+if ! [ -n "$output_dir" ]; then output_dir="$input_dir"/output; fi
+if ! [ -n "$report_file" ]; then report_file="$output_dir"/report.html; fi
+
+bin_dir="$CGT_HOME"/bin
+cgt_js="$bin_dir"/cgt-js
+cgt_monoreport="$bin_dir"/cgt-monoreport
+#Add for cgt_timestamp
+cgt_timestamp="$bin_dir"/cgt-timestamp
+perftest_parser="$CGT_LIB"/perfcharts-perftest-parser.jar
+perftest_generator="$CGT_LIB"/perfcharts-generator.jar
+jmeter_default_config_file="$CGT_HOME"/res/jmeter.chartconf
+rm_default_config_file="$CGT_HOME"/res/res.template.chartconf
+report_template="$CGT_HOME"/res/report-mono.template.html
+
+tmp_dir="$output_dir"/data
+jmeter_dir="$tmp_dir"/jmeter
+jmeter_data_table="$jmeter_dir"/jmeter.csv
+resource_monitoring_dir="$tmp_dir"/resource_monitoring
+json_dir="$tmp_dir"/subreports
+jmeter_json_file="$json_dir"/Performance.json
+
+# cannot use -t and -l at the same time
+if [ -n "$end_time" ] && [ -n "$test_duration" ]; then
+	echo "$base_name: cannot specify '-t/--before' and '-l/--duration' at the same time" >&2
+	exit 1
+fi
+
+# check the start_offset & test_duration
+if [ -n "$start_offset" ] && [ ! -n "${start_offset//[0-9]/}" ] ; then
+	start_offset=$(expr "$start_offset" \* "60000")
+	if [ -n "$start_time" ] && [ $(date -d "$start_time" "+%s") ] ; then
+		start_time=$(expr "$start_offset" / 1000 + $(date -u -d "$start_time" "+%s"))
+		start_time=$(date -u -d @${start_time} +'%Y-%m-%d %H:%M:%S')
+	elif [ ! -n "$start_time" ] ; then
+		smallestts=$($cgt_timestamp "$input_dir")
+		if [[ ! ${smallestts} =~ "Error" ]] ; then
+			start_time=$((($smallestts + $start_offset) / 1000))
+			start_time=$(date -u -d @${start_time} +'%Y-%m-%d %H:%M:%S')
+		fi
+		if [ -n "$test_duration" ] && [ ! -n "${test_duration//[0-9]/}" ] ; then
+			end_time=$((($smallestts + $start_offset + $test_duration * 60000) / 1000))
+			end_time=$(date -u -d @${end_time} +'%Y-%m-%d %H:%M:%S')
+		elif [ -n "$test_duration" ] ; then
+			echo "[Error] Please input the valid time for '-l'"
+			exit 1
+		fi
+	else
+		echo "[Error] Input the valid date for '-f'"
+		exit 1
+	fi
+elif [ -n "$start_offset" ] ; then
+	echo "[Error] Please input the valid time for '-s'"
+	exit 1
+fi
+
+# parse raw data to data tables
+echo "remove tmp directory '$tmp_dir'" >&2
+rm "$tmp_dir" -Rf
+
+for file in "$input_dir"/*; do
+if [ -f "$file" ]; then
+	echo "parsing input file '$file'..." >&2
+	file_base_name=`basename "$file"`
+	file_extension=${file_base_name##*.}
+	file_bare_name=${file_base_name%%.*}
+	#echo ext of $file_base_name is $file_extension
+	case $file_extension in
+	load|nmon|zabbix)
+		server_name=${file_bare_name%%_*}
+		mkdir -p "$resource_monitoring_dir"
+		if [ "$file_extension" == "load" ]; then
+			parser_class=CPULoadParser
+		elif [ "$file_extension" == "nmon" ]; then
+			parser_class=NMONParser
+		elif [ "$file_extension" == "zabbix" ]; then
+			parser_class=ZabbixParser
+		fi
+		if ! $CGT_JAVA_COMMAND  "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone"  < "$file" >> "$resource_monitoring_dir/$server_name.csv"; then
+                        exit 1
+                fi
+		if ! $CGT_JAVA_COMMAND "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone"  < "$file" >> "$resource_monitoring_dir/$server_name.csv"; then
+			exit 1
+		fi
+		;;
+	jtl|csv)
+		mkdir -p "$jmeter_dir"
+		parser_class=JmeterParser
+		if ! $CGT_JAVA_COMMAND "-DstartTime=$start_time" "-DendTime=$end_time" -jar "$perftest_parser" "$parser_class" "$time_zone"< "$file" >> "$jmeter_data_table"; then
+			exit 1
+		fi
+		;;
+	chartconf) ;;
+	*) echo "[Warning] The file'$file' is ignored, because I don't know what it is.";;
+	esac
+fi
+done
+
+# generate charts
+mkdir -p "$json_dir"
+# generate charts from Jmeter
+if [ -f "$jmeter_data_table" ]; then
+	if [ -f "$input_dir/jmeter.chartconf" ]; then
+		config_file_template="$input_dir/jmeter.chartconf"
+	else
+		config_file_template="$jmeter_default_config_file"
+	fi
+	encoded_exclusion_pattern=${exclusion_pattern//\\/\\\\}
+	encoded_exclusion_pattern=${encoded_exclusion_pattern////\\\/}
+	sed "s/<!--{command_line_exclusion_pattern}-->/${encoded_exclusion_pattern}/g" "$config_file_template" > "$jmeter_dir/jmeter.chartconf"
+	if ! $CGT_JAVA_COMMAND -Xms2048m -Xmx2048m -jar "$perftest_generator" "$jmeter_dir/jmeter.chartconf" < "$jmeter_data_table" > "$jmeter_json_file"; then
+		exit 1
+	fi
+fi
+
+# generate system resource monitoring charts
+for res_data_table in "$resource_monitoring_dir"/*.csv; do
+if [ -f "$res_data_table" ]; then
+	file_base_name=`basename "$res_data_table"`
+	file_bare_name=${file_base_name%%.*} #FIXME: change to file_bare_name=${file_base_name%.*} ?
+	server_name=${file_bare_name%%_*}
+	unset config_file_template
+	if [ -f "$input_dir/$server_name.chartconf" ]; then
+		config_file_template=$input_dir/$server_name.chartconf
+	elif [ -f "$input_dir/res.template.chartconf" ]; then
+		config_file_template=$input_dir/res.template.chartconf
+	else
+		config_file_template=$rm_default_config_file
+	fi
+	encoded_server_name=${server_name//\\/\\\\}
+	encoded_server_name=${encoded_server_name////\\\/}
+	sed "s/<!--{server_name}-->/${encoded_server_name}/g" "$config_file_template" > "$resource_monitoring_dir/$server_name.chartconf"
+	if ! $CGT_JAVA_COMMAND -jar "$perftest_generator" "$resource_monitoring_dir/$server_name.chartconf" < "$res_data_table" > "$json_dir/Resource-$server_name.json"; then
+		exit 1
+	fi
+fi
+done
+
+# generate final report
+js_file="$tmp_dir"/data.js
+"$cgt_js" "$json_dir" "$js_file"
+"$cgt_monoreport" "$js_file" "$report_template" "$report_file"
+
+

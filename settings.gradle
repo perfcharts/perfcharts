@@ -1,0 +1,4 @@
+include 'generator'
+include 'perftest'
+include 'perftest-parser'
+include 'tool-zabbix-downloader'

@@ -1,0 +1,30 @@
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'perfcharts.tool.zabbix.downloader.ZabbixDownloaderLauncher'
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.json:json:20150729'
+    compile 'org.apache.commons:commons-csv:1.2'
+}
+
+task copyLibTask(type: Copy, dependsOn: jar) {
+    from 'build/libs'
+    into 'build/dist/lib'
+}
+
+assemble.dependsOn(copyLibTask)
+

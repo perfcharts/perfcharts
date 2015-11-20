@@ -1,0 +1,30 @@
+subprojects {
+    apply plugin: 'java'
+}
+
+task copyJars(type: Copy, dependsOn: subprojects.jar) {
+    from subprojects.jar
+    into "$buildDir/dist/lib"
+}
+
+task copyDeps(type: Copy, dependsOn: subprojects.jar) {
+    from subprojects.configurations.runtime
+    into "$buildDir/dist/lib"
+}
+
+task copyStaticAssets(type: Copy) {
+    from 'perftest/src/main/dist'
+    into "$buildDir/dist"
+}
+
+task copyDynamicAssets(type: Copy) {
+    dependsOn ':perftest:assemble'
+    from 'perftest/build/dynamicAssets'
+    into "$buildDir/dist"
+}
+
+task explodedDist(type: Copy, dependsOn: [copyJars, copyDeps, copyStaticAssets, copyDynamicAssets]) {
+    from 'README.md'
+    from 'LICENSE'
+    into "$buildDir/dist"
+}

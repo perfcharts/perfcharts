@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cgtConfig version="0.1" title="" classPath="perfcharts-perftest.jar">
+	<chartConfigTemplate class="JmeterSummaryChartTemplate"/>
+	<chartConfigTemplate class="JmeterThreadChartTemplate">
+	</chartConfigTemplate>
+	<!--chartConfigTemplate class="JmeterAverageRTOverallChartTemplate"/-->
+	<chartConfigTemplate class="TopTxWithHighestAvgRTBarChartTemplate"/>
+	<chartConfigTemplate class="TopTxWithMostHitsBarChartTemplate"/>
+	<chartConfigTemplate class="JmeterAverageRTChartTemplate">
+		<exclusionPattern><!--{command_line_exclusion_pattern}--></exclusionPattern>
+	</chartConfigTemplate>
+	<chartConfigTemplate class="JmeterRTChartTemplate" />
+	<chartConfigTemplate class="JmeterTotalTPSChartTemplate">
+		<exclusionPattern><!--{command_line_exclusion_pattern}--></exclusionPattern>
+	</chartConfigTemplate>
+	<chartConfigTemplate class="JmeterTPSChartTemplate"/>
+	<chartConfigTemplate class="JmeterHitsChartTemplate"/>
+</cgtConfig>
