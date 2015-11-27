@@ -60,6 +60,7 @@ cgt_monoreport="$bin_dir"/cgt-monoreport
 perftest_parser="$CGT_LIB"/perfcharts-perftest-parser.jar
 perftest_generator="$CGT_LIB"/perfcharts-generator.jar
 trend_default_config_file=$CGT_HOME/res/perftrend.chartconf
+report_template="$CGT_HOME"/res/report-mono.template.html
 
 tmp_dir="$output_dir"/data
 trend_conf_file="$tmp_dir"/perftrend.chartconf
@@ -90,7 +91,6 @@ fi
 
 # generate final report
 js_file="$tmp_dir"/data.js
-report_template=$CGT_HOME/res/report_mono.html
 "$cgt_js" "$tmp_dir" "$js_file"
 "$cgt_monoreport" "$js_file" "$report_template" "$report_file"
 

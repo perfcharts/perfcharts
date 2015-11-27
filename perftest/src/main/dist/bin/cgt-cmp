@@ -54,12 +54,11 @@ cgt_monoreport="$bin_dir"/cgt-monoreport
 perftest_parser="$CGT_LIB"/perfcharts-perftest-parser.jar
 perftest_generator="$CGT_LIB"/perfcharts-generator.jar
 perfcmp_default_config_file="$CGT_HOME"/res/perfcmp.template.chartconf
-report_template="$CGT_HOME"/res/report_mono.html
+report_template="$CGT_HOME"/res/report-mono.template.html
 
 tmp_dir="$output_dir"/data
 perfcmp_dir="$tmp_dir"/perfcmp
 json_dir="$tmp_dir"/subreports
-report_template="$CGT_HOME"/res/report_mono.html
 
 # parse raw data to data tables
 echo "remove tmp directory '$tmp_dir'" >&2
