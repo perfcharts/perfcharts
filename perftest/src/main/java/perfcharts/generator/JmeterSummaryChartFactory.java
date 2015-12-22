@@ -6,9 +6,8 @@ import perfcharts.formatter.ChartFormatter;
 import perfcharts.formatter.GenericTableFormatter;
 
 /**
- * A factory for creating creating {@link ChartGenerator} and {@link ChartFormatter}
- * objects for {@link JmeterSummaryChart}
- * 
+ * A factory for creating creating a {@link JmeterSummaryChartGenerator} and corresponding formatter.
+ *
  * @author Rayson Zhu
  *
  */

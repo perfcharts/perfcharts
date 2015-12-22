@@ -1,35 +1,29 @@
 package perfcharts.generator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import perfcharts.chart.GenericTable;
 import perfcharts.chart.TableCell;
 import perfcharts.common.AddTransformSelector;
 import perfcharts.common.FieldSelector;
 import perfcharts.common.IndexFieldSelector;
 import perfcharts.common.Utilities;
-import perfcharts.model.DataTable;
 import perfcharts.config.JmeterSummaryChartConfig;
+import perfcharts.model.DataTable;
+
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * A generator reads data tables and produces Jmeter Summary Table
+ * A generator reads data tables and produces {@link GenericTable}
  * according to preset configurations.
  * 
  * @author Rayson Zhu
  *
  */
-public class JmeterSummaryChartGenerator implements ChartGenerator {
+public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerator implements ChartGenerator {
 	private final static Logger LOGGER = Logger
-			.getLogger(JmeterSummaryChartGenerator.class.getName());
+			.getLogger(JmeterSimpleSummaryChartGenerator.class.getName());
 	/**
 	 * The factory for creating related objects.
 	 */
@@ -42,19 +36,19 @@ public class JmeterSummaryChartGenerator implements ChartGenerator {
 	/**
 	 * constructor
 	 */
-	public JmeterSummaryChartGenerator() {
+	public JmeterSimpleSummaryChartGenerator() {
 	}
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param factory
 	 *            The factory for creating related objects
 	 * @param config
 	 *            the chart configuration
 	 */
-	public JmeterSummaryChartGenerator(JmeterSummaryChartFactory factory,
-			JmeterSummaryChartConfig config) {
+	public JmeterSimpleSummaryChartGenerator(JmeterSummaryChartFactory factory,
+											 JmeterSummaryChartConfig config) {
 		this.config = config;
 		this.factory = factory;
 	}
@@ -88,8 +82,8 @@ public class JmeterSummaryChartGenerator implements ChartGenerator {
 		}
 		// generate table column labels
 		String[] header = new String[] { "Transaction", "#Samples", "Average",
-				"Min", "90% Line", "Max", "Latency", "Std. Dev.", "Error%",
-				"Throughput (tx/h)", "KiB/sec", "Avg. Bytes" };
+				"Min", "90% Line", "Max", "Latency", "Std. Dev.", "Error%"
+				/*, "Throughput (tx/h)", "KiB/sec", "Avg. Bytes" */};
 		Map<String, Object> columnKeys = new HashMap<String, Object>();
 		for (int i = 0; i < header.length; i++) {
 			columnKeys.put(header[i], i);
@@ -176,16 +170,10 @@ public class JmeterSummaryChartGenerator implements ChartGenerator {
 				// std. dev. = sqrt(average of (x^2) - (average of x)^2)
 				tableRow[7] = new TableCell(Math.sqrt(sumRTSquared
 						/ numRTsuccess - avgRT * avgRT));
-
-				// tableRow[7] = new TableCell(100.0 * numRTfailure / samples);
 				double throughput = 1.0 * numRTsuccess / duration;
-				// tableRow[8] = new TableCell(formatThroughput(throughput),
-				// "string",
-				// throughput);
-				tableRow[9] = new TableCell(throughput * 1000 * 60 * 60);
-				// tableRow[8].setCssClass("perfcharts-tx-summary-throughput");
-				tableRow[10] = new TableCell(bytesSum / 1.024 / duration);
-				tableRow[11] = new TableCell(1.0 * bytesSum / numRTsuccess);
+//				tableRow[9] = new TableCell(throughput * 1000 * 60 * 60);
+//				tableRow[10] = new TableCell(bytesSum / 1.024 / duration);
+//				tableRow[11] = new TableCell(1.0 * bytesSum / numRTsuccess);
 			} else {
 				tableRow[2] = new TableCell(Double.NaN);
 				tableRow[3] = new TableCell(Double.NaN);
@@ -194,9 +182,9 @@ public class JmeterSummaryChartGenerator implements ChartGenerator {
 				tableRow[6] = new TableCell(Double.NaN);
 				tableRow[7] = new TableCell(Double.NaN);
 				tableRow[8] = new TableCell(Double.NaN);
-				tableRow[9] = new TableCell(Double.NaN);
-				tableRow[10] = new TableCell(Double.NaN);
-				tableRow[11] = new TableCell(Double.NaN);
+//				tableRow[9] = new TableCell(Double.NaN);
+//				tableRow[10] = new TableCell(Double.NaN);
+//				tableRow[11] = new TableCell(Double.NaN);
 			}
 			double errorPerc = samples > 0 ? 100.0 * numRTfailure / samples
 					: Double.NaN;
@@ -258,11 +246,9 @@ public class JmeterSummaryChartGenerator implements ChartGenerator {
 		totalRow[8] = new TableCell(100.0 * numRTfailureTotal / samplesTotal);
 		long durationTotal = maxTimestampTotal - minTimestampTotal + 1;
 		double throughput = 1.0 * numRTsuccessTotal / durationTotal;
-		// totalRow[8] = new TableCell(formatThroughput(throughput), "string",
-		// throughput);
-		totalRow[9] = new TableCell(throughput * 1000 * 60 * 60);
-		totalRow[10] = new TableCell(bytesSumTotal / 1.024 / durationTotal);
-		totalRow[11] = new TableCell(1.0 * bytesSumTotal / numRTsuccessTotal);
+//		totalRow[9] = new TableCell(throughput * 1000 * 60 * 60);
+//		totalRow[10] = new TableCell(bytesSumTotal / 1.024 / durationTotal);
+//		totalRow[11] = new TableCell(1.0 * bytesSumTotal / numRTsuccessTotal);
 		// tableRows.add(totalRow);
 		List<TableCell[]> bottomRows = new ArrayList<TableCell[]>(1);
 		bottomRows.add(totalRow);
