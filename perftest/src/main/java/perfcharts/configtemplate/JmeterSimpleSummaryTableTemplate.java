@@ -6,7 +6,7 @@ import perfcharts.config.JmeterSummaryChartConfig;
 /**
  * Created by vfreex on 12/22/15.
  */
-public class JmeterSimpleSummaryTableTemplate {
+public class JmeterSimpleSummaryTableTemplate extends ChartTemplateBase {
     public JmeterSimpleSummaryTableTemplate() {
     }
     public JmeterSimpleSummaryChartConfig generateChartConfig() {

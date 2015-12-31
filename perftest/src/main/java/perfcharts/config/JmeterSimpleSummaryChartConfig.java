@@ -11,7 +11,7 @@ import perfcharts.generator.JmeterSummaryChartFactoryImpl;
  *
  */
 public class JmeterSimpleSummaryChartConfig extends
-		GenericTableConfigBase {
+		JmeterSummaryChartConfig {
 	@Override
 	public JmeterSummaryChartFactory createChartFactory() throws Exception {
 		return new JmeterSimpleSummaryChartFactoryImpl();

@@ -2,6 +2,7 @@ package perfcharts.generator;
 
 import perfcharts.chart.GenericTable;
 import perfcharts.config.ChartConfig;
+import perfcharts.config.JmeterSimpleSummaryChartConfig;
 import perfcharts.config.JmeterSummaryChartConfig;
 import perfcharts.formatter.GenericTableFormatter;
 import perfcharts.formatter.GenericTableFormatterImpl;
@@ -18,7 +19,7 @@ public class JmeterSimpleSummaryChartFactoryImpl implements JmeterSummaryChartFa
 	public JmeterSimpleSummaryChartGenerator createGenerator(
 			ChartConfig<GenericTable> config) throws Exception {
 		return new JmeterSimpleSummaryChartGenerator(this,
-				(JmeterSummaryChartConfig) config);
+				(JmeterSimpleSummaryChartConfig) config);
 	}
 
 	@Override

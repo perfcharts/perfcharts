@@ -6,6 +6,7 @@ import perfcharts.common.AddTransformSelector;
 import perfcharts.common.FieldSelector;
 import perfcharts.common.IndexFieldSelector;
 import perfcharts.common.Utilities;
+import perfcharts.config.JmeterSimpleSummaryChartConfig;
 import perfcharts.config.JmeterSummaryChartConfig;
 import perfcharts.model.DataTable;
 
@@ -31,7 +32,7 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 	/**
 	 * the chart configuration
 	 */
-	private JmeterSummaryChartConfig config;
+	private JmeterSimpleSummaryChartConfig config;
 
 	/**
 	 * constructor
@@ -48,7 +49,7 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 	 *            the chart configuration
 	 */
 	public JmeterSimpleSummaryChartGenerator(JmeterSummaryChartFactory factory,
-											 JmeterSummaryChartConfig config) {
+											 JmeterSimpleSummaryChartConfig config) {
 		this.config = config;
 		this.factory = factory;
 	}
@@ -271,7 +272,7 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 	 * 
 	 * @return the configuration
 	 */
-	public JmeterSummaryChartConfig getConfig() {
+	public JmeterSimpleSummaryChartConfig getConfig() {
 		return config;
 	}
 
@@ -281,7 +282,7 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 	 * @param config
 	 *            the configuration
 	 */
-	public void setConfig(JmeterSummaryChartConfig config) {
+	public void setConfig(JmeterSimpleSummaryChartConfig config) {
 		this.config = config;
 	}
 
