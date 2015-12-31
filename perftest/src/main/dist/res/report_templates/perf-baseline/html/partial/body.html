@@ -1,0 +1,62 @@
+<header id="main-header">
+    <div class="container">
+        <nav id="my-navbar" class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Perf-test Report</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav" id="mainNav">
+                        <li class="active"><a href="#!/report/performance-test">Performance Test <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false">System Resource Monitoring <span class="caret"></span></a>
+                            <ul class="dropdown-menu" id="monitoredHostMenu">
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul id="my-nav-right" class="nav navbar-nav navbar-right">
+                        <li><a href="#!/custom-chart">Custom Chart</a></li>
+                        <li><a href="#!/help">Help</a></li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+    </div>
+</header>
+<section id="content">
+    <div id="chart-tab-container" class="container">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="chartTabs">
+            <!--<li role="presentation" class="active"><a href="#!/report/performance-test/summary" role="tab"-->
+                                                      <!--data-target="chart-container">Summary</a></li>-->
+            <!--<li role="presentation"><a href="#!/report/performance-test/top-slow-tx" role="tab"-->
+                                       <!--data-target="chart-container">Top 10 slow transactions</a></li>-->
+            <!--<li role="presentation"><a href="#!/report/performance-test/avg-rt-over-time" role="tab"-->
+                                       <!--data-target="chart-container">Average response time over-->
+                <!--time</a></li>-->
+            <!--<li role="presentation"><a href="#!/report/performance-test/rt-over-time" role="tab"-->
+                                       <!--data-target="chart-container">Response time over time</a></li>-->
+        </ul>
+        <!-- Tab panes -->
+        <div id="chart-container" role="tabpanel" class="tab-pane fade in active">
+        </div>
+    </div>
+</section>
+<script>
+    ChartGeneration = {};
+    ChartGeneration.data = [];
+</script>
+<script src="data.js"></script>
+

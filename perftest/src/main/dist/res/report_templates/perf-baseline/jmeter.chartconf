@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cgtConfig version="0.1" title="" classPath="perfcharts-perftest.jar">
+	<chartConfigTemplate class="JmeterSimpleSummaryTableTemplate"/>
+	<chartConfigTemplate class="TopTxWithHighestAvgRTBarChartTemplate"/>
+	<chartConfigTemplate class="JmeterAverageRTChartTemplate">
+		<exclusionPattern><!--{command_line_exclusion_pattern}--></exclusionPattern>
+	</chartConfigTemplate>
+	<chartConfigTemplate class="JmeterRTChartTemplate" />
+</cgtConfig>
