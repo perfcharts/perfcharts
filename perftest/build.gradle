@@ -41,8 +41,12 @@ task buildReportTemplate(type: Exec) {
 	}
 }
 
-assemble.dependsOn buildReportTemplate, buildMonoReportTemplate
+task runBuildSh(type: Exec) {
+	commandLine 'bash', '-e', 'build.sh'
+}
 
+// assemble.dependsOn buildReportTemplate, buildMonoReportTemplate
+assemble.dependsOn runBuildSh
 
 apply plugin: 'distribution'
 
@@ -50,6 +54,9 @@ distributions {
     main {
         contents {
             from("$buildDir/dynamicAssets"){
+                into('')
+            }
+            from("src/main/dist"){
                 into('')
             }
             from (configurations.runtime){
