@@ -1,5 +1,5 @@
 
-(function(){
+(function($){ $(function() {
 var DEFAULT_ROUTE="!/report/performance-test";
 
 var AppRouter = Backbone.Router.extend({
@@ -206,5 +206,5 @@ Backbone.history.start();
 //$('#chartTabs a').click(function (e) {
 //  $(this).tab("show");
 //})
-
-})();
+});
+})(jQuery);

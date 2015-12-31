@@ -28,6 +28,7 @@ echo '</head>
 cat "$DIR"/partial/body.html | tee -a "$DIR/$REPORT_NORMAL_FILENAME" "$DIR/$REPORT_MONO_FILENAME" > /dev/null
 
 # import JS files
+echo '<script src="data.js"></script>' >> "$DIR/$REPORT_NORMAL_FILENAME"
 echo '<script>' >> "$DIR/$REPORT_MONO_FILENAME"
 while read line; do
   if [ -z "$line" ]; then continue; fi
