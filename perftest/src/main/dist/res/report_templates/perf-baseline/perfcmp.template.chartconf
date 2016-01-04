@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cgtConfig version="0.1" title="" classPath="perfcharts-perftest.jar">
 	<chartConfigTemplate class="PerformanceComparisonTableTemplate"><subtitle><!--{cmp_desc}--></subtitle></chartConfigTemplate>
-	<chartConfigTemplate class="PerformanceComparisonChartTemplateOrderedByHits"><subtitle><!--{cmp_desc}--></subtitle></chartConfigTemplate>
 	<chartConfigTemplate class="PerformanceComparisonChartTemplateOrderedByDifference"><subtitle><!--{cmp_desc}--></subtitle></chartConfigTemplate>
 </cgtConfig>
