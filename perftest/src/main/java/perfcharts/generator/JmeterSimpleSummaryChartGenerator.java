@@ -56,7 +56,7 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 
 	@Override
 	public GenericTable generate(DataTable log) throws Exception {
-		LOGGER.info("Generating Perf Summary Table '" + config.getTitle()
+		LOGGER.info("Generating Simple Perf Summary Table '" + config.getTitle()
 				+ "' (" + config.getKey() + ")...");
 		FieldSelector labelField = new IndexFieldSelector(0);
 		final FieldSelector timestampField = new IndexFieldSelector(1);
@@ -83,8 +83,19 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 		}
 		// generate table column labels
 		String[] header = new String[] { "Transaction", "#Samples", "Average",
-				"Min", "90% Line", "Max", "Latency", "Std. Dev.", "Error%"
+				"Min", "90% Line", "Max", "Std. Dev.", "Latency", "Error%"
 				/*, "Throughput (tx/h)", "KiB/sec", "Avg. Bytes" */};
+
+		String[] tooltip = new String[]{"transaction name, where transaction is a collection of end-user actions that represent typical application activity",
+				"number of repeated executions",
+				"average response time in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
+				"minimum response time in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
+				"response time of 90% line in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
+				"maximum response time in milliseconds, where the 90th percentile response time value is the value for which 90% of the data points are smaller and 10% are bigger",
+				"standard deviation of response times, where standard deviation is a measure of the variability of a data set",
+				"latency in milliseconds, where latency is a time interval between the stimulation and response",
+				"Error% = number of failed requests / number of all requests"};
+
 		Map<String, Object> columnKeys = new HashMap<String, Object>();
 		for (int i = 0; i < header.length; i++) {
 			columnKeys.put(header[i], i);
@@ -166,12 +177,12 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 				tableRow[4] = new TableCell(Utilities.fastSelect(RTs,
 						(int) Math.round((RTs.size() - 1) * 0.9)).doubleValue());
 				tableRow[5] = new TableCell(maxRT);
-				double avgLatency = 1.0 * sumLatency / numRTsuccess;
-				tableRow[6] = new TableCell(avgLatency);
 				// std. dev. = sqrt(average of (x^2) - (average of x)^2)
-				tableRow[7] = new TableCell(Math.sqrt(sumRTSquared
+				tableRow[6] = new TableCell(Math.sqrt(sumRTSquared
 						/ numRTsuccess - avgRT * avgRT));
-				double throughput = 1.0 * numRTsuccess / duration;
+				double avgLatency = 1.0 * sumLatency / numRTsuccess;
+				tableRow[7] = new TableCell(avgLatency);
+//				double throughput = 1.0 * numRTsuccess / duration;
 //				tableRow[9] = new TableCell(throughput * 1000 * 60 * 60);
 //				tableRow[10] = new TableCell(bytesSum / 1.024 / duration);
 //				tableRow[11] = new TableCell(1.0 * bytesSum / numRTsuccess);
@@ -182,7 +193,7 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 				tableRow[5] = new TableCell(Double.NaN);
 				tableRow[6] = new TableCell(Double.NaN);
 				tableRow[7] = new TableCell(Double.NaN);
-				tableRow[8] = new TableCell(Double.NaN);
+//				tableRow[8] = new TableCell(Double.NaN);
 //				tableRow[9] = new TableCell(Double.NaN);
 //				tableRow[10] = new TableCell(Double.NaN);
 //				tableRow[11] = new TableCell(Double.NaN);
@@ -241,12 +252,12 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 				.doubleValue());
 		totalRow[5] = new TableCell(maxRTTotal);
 		double avgLatencyTotal = 1.0 * sumLatencyTotal / numRTsuccessTotal;
-		totalRow[6] = new TableCell(avgLatencyTotal);
-		totalRow[7] = (new TableCell(Math.sqrt(sumRTSquaredTotal
+		totalRow[7] = new TableCell(avgLatencyTotal);
+		totalRow[6] = (new TableCell(Math.sqrt(sumRTSquaredTotal
 				/ numRTsuccessTotal - avgRTTotal * avgRTTotal)));
 		totalRow[8] = new TableCell(100.0 * numRTfailureTotal / samplesTotal);
 		long durationTotal = maxTimestampTotal - minTimestampTotal + 1;
-		double throughput = 1.0 * numRTsuccessTotal / durationTotal;
+//		double throughput = 1.0 * numRTsuccessTotal / durationTotal;
 //		totalRow[9] = new TableCell(throughput * 1000 * 60 * 60);
 //		totalRow[10] = new TableCell(bytesSumTotal / 1.024 / durationTotal);
 //		totalRow[11] = new TableCell(1.0 * bytesSumTotal / numRTsuccessTotal);
@@ -263,6 +274,7 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 		chart.setColumnKeys(columnKeys);
 		chart.setRows(tableRows);
 		chart.setBottomRows(bottomRows);
+        chart.setHeaderTooltip(tooltip);
 		return chart;
 	}
 
