@@ -8,6 +8,7 @@ import perfcharts.formatter.ChartFormatter;
 public class GenericTable extends Chart {
 	private ChartFormatter<GenericTable> formatter;
 	private String[] header;
+	private String[] headerTooltip;
 	private Map<String, Object> columnKeys;
 	private Collection<TableCell[]> topRows;
 	private Collection<TableCell[]> rows;
@@ -81,4 +82,11 @@ public class GenericTable extends Chart {
 		this.bottomRows = bottomRows;
 	}
 
+	public String[] getHeaderTooltip() {
+		return headerTooltip;
+	}
+
+	public void setHeaderTooltip(String[] headerTooltip) {
+		this.headerTooltip = headerTooltip;
+	}
 }
