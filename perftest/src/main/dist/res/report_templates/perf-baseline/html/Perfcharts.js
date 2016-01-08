@@ -1,6 +1,40 @@
 if (typeof Perfcharts === "undefined")
     Perfcharts = {};
 
+Perfcharts.eventHandlers = {
+    toggleSeries : function(self, seriesIndex) {
+        var $this = $(self);
+        var $placeholder = $this.parents(".legend").siblings(".placeholder");
+
+        var chart =  $placeholder.data("chart");
+        var series = chart.series[seriesIndex];
+        var show = false;
+        if (series._show === false)
+            show = true;
+        series._show = show;
+
+        if (!series.lines)
+            series.lines = {
+                show : true
+            };
+        series.lines.show = show ? series._showLines : false;
+
+        if (!series.bars)
+            series.bars = {
+                show : false
+            };
+        series.bars.show = show ? series._showBars : false;
+
+        if (!series.points)
+            series.points = {
+                show : false
+            };
+        series.points.show = show ? series._showPoints : false;
+
+        redraw($placeholder, chart.plot, chart, true);
+    }
+};
+
 //abstract class Painter
 Perfcharts.Painter = function() {
 };
@@ -282,10 +316,11 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
 		if (series._show === false)
 			show = false;
 		return '<a class="'
-				+ (show ? 'series_label_shown' : 'series_label_hidden')
-				+ '" onclick="ChartGeneration.eventHandlers.toggleSeries(this, '
-				+ series._reportIndex + ", " + series._chartIndex + ", "
-				+ series._index + ');">' + label + '</a>';
+				+ (show ? 'perfcharts-lenged-label-active' : 'perfcharts-lenged-label-inactive')
+				+ '" onclick="Perfcharts.eventHandlers.toggleSeries(this, ' + series._index + ');">' + label + '</a>';
+//				+ '" onclick="ChartGeneration.eventHandlers.toggleSeries(this, '
+//				+ series._reportIndex + ", " + series._chartIndex + ", "
+//				+ series._index + ');">' + label + '</a>';
 	}
 	function yTickFormatter(num, yaxis) {
 		var str, intLength, result, negative = num < 0, dotPos;
@@ -468,6 +503,7 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
 		var plot = $.plot($placeholder, chart.series, options);
 		$placeholder.data("plot", plot);
 		$placeholder.data("chart", chart);
+		$placeholder.data("painter", this);
 		chart.plot = plot;
 		return plot;
 	}
@@ -656,6 +692,23 @@ Perfcharts.FlotChartPainter = function() {
 };
 Perfcharts.FlotChartPainter.prototype = new Perfcharts.Painter();
 
+	function showOrHideAllSeries(chart, hide) {
+		for (var i = 0; i < chart.series.length; ++i) {
+			var series = chart.series[i];
+			if (!series.lines)
+				series.lines = {};
+			series.lines.show = hide ? false : series.showLines;
+			if (!series.bars)
+				series.bars = {};
+			series.bars.show = hide ? false : series.showBars;
+			if (!series.points)
+				series.points = {};
+			series.points.show = hide ? false : series.showPoints;
+			series._show = hide ? false : true;
+		}
+		redraw(chart.plot.getPlaceholder(), chart.plot, chart, true);
+	}
+
 	function setupChartControls($controlsPad, chart) {
 		// $controlsPad
 		$("<input type=\"button\" value=\"show all\"/>").click(function() {
@@ -671,11 +724,11 @@ Perfcharts.FlotChartPainter.prototype.paint = function($chart, chart) {
             $("<h4 class='chart_subtitle'/>").text(chart.subtitle));
     var $placeholder = $("<div class='placeholder'/>").appendTo($chart);
     $("<div class='x_label'/>").text(chart.xLabel).appendTo($chart);
+    setupChartControls($("<div class='chart_controls_pad'/>").appendTo(
+            $chart), chart);
     var $legend = $("<div class='legend'/>").appendTo($chart);
     var plot = draw($placeholder, $legend, chart);
     registerEvents($placeholder);
-    setupChartControls($("<div class='chart_controls_pad'/>").appendTo(
-            $chart), chart);
 };
 
 
