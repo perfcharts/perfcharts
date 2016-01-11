@@ -4,7 +4,6 @@ import perfcharts.chart.GenericTable;
 import perfcharts.chart.TableCell;
 import perfcharts.common.FieldSelector;
 import perfcharts.common.IndexFieldSelector;
-import perfcharts.config.PerformanceComparisonTableConfig;
 import perfcharts.config.PerformanceSimpleComparisonTableConfig;
 import perfcharts.model.DataTable;
 
@@ -40,19 +39,31 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
         table.setTitle(config.getTitle());
         table.setSubtitle(config.getSubtitle());
         table.setKey("perfcharts-simple-perfcmp");
-        final int COLUMNS = 11;
-        table.setHeader(new String[] { "Transaction", "#Samples",
+        final int COLUMNS = 8;
+        table.setHeader(new String[]{
+                "Transaction",
+                "#Samples",
                 "#Samples diff", "Average", "Average diff", "Average diff%",
-                "90% line", "90% line diff", "90% line diff%",
+/*                "90% line", "90% line diff", "90% line diff%",*/
 /*                "Throughput (tx/h)", "Throughput diff", "Throughput diff%",*/
-                "Error%", "Error% diff" });
+                "Error%", "Error% diff"});
+        table.setHeaderTooltip(new String[]{
+                "a transaction is a collection of end-user actions that represent typical application activity",
+                "number of repeated executions of this build",
+                "sample difference between this build and the baseline build",
+                "average response time of this build, in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
+                "difference of average response time between this build and the baseline build, in milliseconds, where a positive value means performance degradation and a negative value means performance improvement",
+                "percentage change of average response time between this build and the baseline build, where a positive value means performance degradation and a negative value means performance improvement",
+                "percentage of failed transactions, calculated by the number of failed requests / the number of all requests",
+                "percentage difference of failed transactions between this build and the baseline build, where a positive value means error% is increased and a a negative value means error% is decreased",
+        });
         FieldSelector labelField = new IndexFieldSelector(0);
         FieldSelector sSampleField = new IndexFieldSelector(1);
         FieldSelector dSampleField = new IndexFieldSelector(2);
         FieldSelector sAverageField = new IndexFieldSelector(3);
         FieldSelector dAverageField = new IndexFieldSelector(4);
-        FieldSelector s90LineField = new IndexFieldSelector(5);
-        FieldSelector d90LineField = new IndexFieldSelector(6);
+//        FieldSelector s90LineField = new IndexFieldSelector(5);
+//        FieldSelector d90LineField = new IndexFieldSelector(6);
         FieldSelector sErrorField = new IndexFieldSelector(7);
         FieldSelector dErrorField = new IndexFieldSelector(8);
         //FieldSelector sThroughputField = new IndexFieldSelector(9);
@@ -87,18 +98,18 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
             row[4] = new TableCell(diffAverage);
             double diffAveragePercentage = diffAverage * 100.0 / dAverage;
             row[5] = new TableCell(diffAveragePercentage);
-			/*if (Double.isInfinite(diffAveragePercentage)|| diffAveragePercentage >= 50.0){
+            /*if (Double.isInfinite(diffAveragePercentage)|| diffAveragePercentage >= 50.0){
 				row[5].setCssClass("perfcharts_warning");
 				//row[0].setCssClass("perfcharts_warning");
-			} else */if (diffAveragePercentage <= -50.0){
+			} else if (diffAveragePercentage <= -50.0){
                 row[5].setCssClass("perfcharts_fine");
-            }
-
-            double s90Line = (double) s90LineField.select(dataRow);
-            double d90Line = (double) d90LineField.select(dataRow);
-            row[6] = new TableCell(s90Line);
-            row[7] = new TableCell(s90Line - d90Line);
-            row[8] = new TableCell((s90Line - d90Line) * 100.0 / d90Line);
+            }*/
+//
+//            double s90Line = (double) s90LineField.select(dataRow);
+//            double d90Line = (double) d90LineField.select(dataRow);
+//            row[6] = new TableCell(s90Line);
+//            row[7] = new TableCell(s90Line - d90Line);
+//            row[8] = new TableCell((s90Line - d90Line) * 100.0 / d90Line);
             //double sThroughput = (double) sThroughputField.select(dataRow);
             //double dThroughput = (double) dThroughputField.select(dataRow);
 //            row[9] = new TableCell(sThroughput);
@@ -107,13 +118,13 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
 //                    / dThroughput);
             double sError = (double) sErrorField.select(dataRow);
             double dError = (double) dErrorField.select(dataRow);
-            row[9] = new TableCell(sError);
+            row[6] = new TableCell(sError);
             if (Double.isInfinite(sError) || Double.isNaN(sError)
-                    || sError > 0.0){
-                row[9].setCssClass("perfcharts_warning");
-                row[0].setCssClass("perfcharts_warning");
+                    || sError > 0.0) {
+                row[6].setCssClass("perfcharts-warning");
+                //row[0].setCssClass("perfcharts-warning");
             }
-            row[10] = new TableCell(sError - dError);
+            row[7] = new TableCell(sError - dError);
         }
         List<TableCell[]> rows = new ArrayList<TableCell[]>(tx2RowMap.size());
         for (Map.Entry<String, TableCell[]> entry : tx2RowMap.entrySet())
