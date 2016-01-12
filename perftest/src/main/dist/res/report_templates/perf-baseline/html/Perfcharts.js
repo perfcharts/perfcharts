@@ -60,15 +60,16 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
     		var isFloat = cell.valueType === "double" || cell.valueType === "float";
     		var isNumber = isFloat || typeof cell.value === "number"
     				|| cell.valueType === "int" || cell.valueType === "long";
+    	    var value = cell.value;
     		if (isNumber && cell.value !== null && cell.cssClass && cell.cssClass.indexOf("perfcharts-unit-ms2s") >= 0) {
-    		    cell.value = parseFloat(cell.value) / 1000.0;
+    		    value = parseFloat(cell.value) / 1000.0;
     		}
-    		var showText = cell.value;
+    		//var showText = cell.value;
     		if (isFloat) {
-    			showText = cell.value !== null ? cell.value.toFixed(3)
+    			value = value !== null ? value.toFixed(3)
     					: (cell.rawValue === "NaN" ? "N/A" : cell.rawValue);
     		}
-    		var $td = $("<td/>").text(showText);
+    		var $td = $("<td/>").text(value);
     		if (cell.cssClass)
     			$td.addClass(cell.cssClass);
     		if (isNumber)
