@@ -40,6 +40,9 @@ public class GenericTableFormatterImpl implements GenericTableFormatter {
                 rowsArray.put(parseTableRow(row));
             chartJSON.put("bottomRows", rowsArray);
         }
+        if (chart.getColumnWidths() != null) {
+            chartJSON.put("columnWidths", new JSONArray(chart.getColumnWidths()));
+        }
         return chartJSON.toString();
     }
 

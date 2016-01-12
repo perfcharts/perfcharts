@@ -94,6 +94,11 @@ public class JmeterSummaryChartGenerator implements ChartGenerator {
                 "data transfer rate in kibibytes per second",
                 "average bytes of response data"};
 
+        GenericTable chart = new GenericTable(factory.createFormatter());
+        chart.setColumnWidths(new String[] {
+                null, "6.25%", "6.25%", "6.25%", "6.25%", "6.25%", "6.25%", "6.25%", "6.25%", "6.25%", "6.25%", "6.25%"
+        });
+
         Map<String, Object> columnKeys = new HashMap<String, Object>();
         for (int i = 0; i < header.length; i++) {
             columnKeys.put(header[i], i);
@@ -272,7 +277,6 @@ public class JmeterSummaryChartGenerator implements ChartGenerator {
         bottomRows.add(totalRow);
 
         // complete the chart
-        GenericTable chart = new GenericTable(factory.createFormatter());
         chart.setTitle(config.getTitle());
         chart.setSubtitle(config.getSubtitle());
         chart.setKey(config.getKey());

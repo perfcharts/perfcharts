@@ -51,12 +51,16 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
                 "a transaction is a collection of end-user actions that represent typical application activity",
                 "number of repeated executions of this build",
                 "sample difference between this build and the baseline build",
-                "average response time of this build, in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
-                "difference of average response time between this build and the baseline build, in milliseconds, where a positive value means performance degradation and a negative value means performance improvement",
+                "average response time of this build, in seconds, where response time is the total amount of time it takes to respond to a request for service",
+                "difference of average response time between this build and the baseline build, in seconds, where a positive value means performance degradation and a negative value means performance improvement",
                 "percentage change of average response time between this build and the baseline build, where a positive value means performance degradation and a negative value means performance improvement",
                 "percentage of failed transactions, calculated by the number of failed requests / the number of all requests",
                 "percentage difference of failed transactions between this build and the baseline build, where a positive value means error% is increased and a a negative value means error% is decreased",
         });
+        table.setColumnWidths(new String[]{
+                null, "10%", "10%", "10%", "10%", "10%", "10%", "10%"
+        });
+
         FieldSelector labelField = new IndexFieldSelector(0);
         FieldSelector sSampleField = new IndexFieldSelector(1);
         FieldSelector dSampleField = new IndexFieldSelector(2);
@@ -95,11 +99,27 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
             double dAverage = (double) dAverageField.select(dataRow);
             double diffAverage = sAverage - dAverage;
             row[3] = new TableCell(sAverage);
+            row[3].setCssClass("perfcharts-unit-ms2s");
             row[4] = new TableCell(diffAverage);
+            if (Double.isFinite(diffAverage)) {
+                if (diffAverage <= -1)
+                    row[4].setCssClass("perfcharts-unit-ms2s perfcharts-better");
+                else if (diffAverage >= 1)
+                    row[4].setCssClass("perfcharts-unit-ms2s perfcharts-worse");
+                else {
+                    row[4].setCssClass("perfcharts-unit-ms2s");
+                }
+            }
             double diffAveragePercentage = diffAverage * 100.0 / dAverage;
             row[5] = new TableCell(diffAveragePercentage);
+            if (Double.isFinite(diffAveragePercentage)) {
+                if (diffAveragePercentage <= -0.001)
+                    row[5].setCssClass("perfcharts-better");
+                else if (diffAveragePercentage >= 0.001)
+                    row[5].setCssClass("perfcharts-worse");
+            }
             /*if (Double.isInfinite(diffAveragePercentage)|| diffAveragePercentage >= 50.0){
-				row[5].setCssClass("perfcharts_warning");
+                row[5].setCssClass("perfcharts_warning");
 				//row[0].setCssClass("perfcharts_warning");
 			} else if (diffAveragePercentage <= -50.0){
                 row[5].setCssClass("perfcharts_fine");
@@ -122,9 +142,17 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
             if (Double.isInfinite(sError) || Double.isNaN(sError)
                     || sError > 0.0) {
                 row[6].setCssClass("perfcharts-warning");
-                //row[0].setCssClass("perfcharts-warning");
+                row[0].setCssClass("perfcharts-warning");
             }
-            row[7] = new TableCell(sError - dError);
+            double diffError = sError - dError;
+            row[7] = new TableCell(diffError);
+            if (Double.isFinite(diffError)) {
+                if (diffError <= -0.001)
+                    row[7].setCssClass("perfcharts-better");
+                else if(diffError >= 0.001)
+                    row[7].setCssClass("perfcharts-worse");
+            }
+
         }
         List<TableCell[]> rows = new ArrayList<TableCell[]>(tx2RowMap.size());
         for (Map.Entry<String, TableCell[]> entry : tx2RowMap.entrySet())

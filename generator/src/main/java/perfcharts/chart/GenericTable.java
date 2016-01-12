@@ -1,92 +1,101 @@
 package perfcharts.chart;
 
+import perfcharts.formatter.ChartFormatter;
+
 import java.util.Collection;
 import java.util.Map;
 
-import perfcharts.formatter.ChartFormatter;
-
 public class GenericTable extends Chart {
-	private ChartFormatter<GenericTable> formatter;
-	private String[] header;
-	private String[] headerTooltip;
-	private Map<String, Object> columnKeys;
-	private Collection<TableCell[]> topRows;
-	private Collection<TableCell[]> rows;
-	private Collection<TableCell[]> bottomRows;
-	private String[] footer;
-	
-	public GenericTable(
-			ChartFormatter<GenericTable> formatter) {
-		this.formatter = formatter;
-	}
+    private ChartFormatter<GenericTable> formatter;
+    private String[] header;
+    private String[] headerTooltip;
+    private Map<String, Object> columnKeys;
+    private Collection<TableCell[]> topRows;
+    private Collection<TableCell[]> rows;
+    private Collection<TableCell[]> bottomRows;
+    private String[] footer;
+    private String[] columnWidths;
 
-	@Override
-	public String format() throws Exception {
-		return formatter.format(this);
-	}
+    public GenericTable(
+            ChartFormatter<GenericTable> formatter) {
+        this.formatter = formatter;
+    }
 
-	public ChartFormatter<GenericTable> getFormatter() {
-		return formatter;
-	}
+    @Override
+    public String format() throws Exception {
+        return formatter.format(this);
+    }
 
-	public void setFormatter(
-			ChartFormatter<GenericTable> formatter) {
-		this.formatter = formatter;
-	}
+    public ChartFormatter<GenericTable> getFormatter() {
+        return formatter;
+    }
 
-	public String[] getHeader() {
-		return header;
-	}
+    public void setFormatter(
+            ChartFormatter<GenericTable> formatter) {
+        this.formatter = formatter;
+    }
 
-	public void setHeader(String[] header) {
-		this.header = header;
-	}
+    public String[] getHeader() {
+        return header;
+    }
 
-	public Collection<TableCell[]> getRows() {
-		return rows;
-	}
+    public void setHeader(String[] header) {
+        this.header = header;
+    }
 
-	public void setRows(Collection<TableCell[]> rows) {
-		this.rows = rows;
-	}
+    public Collection<TableCell[]> getRows() {
+        return rows;
+    }
 
-	public String[] getFooter() {
-		return footer;
-	}
+    public void setRows(Collection<TableCell[]> rows) {
+        this.rows = rows;
+    }
 
-	public void setFooter(String[] footer) {
-		this.footer = footer;
-	}
+    public String[] getFooter() {
+        return footer;
+    }
 
-	public Map<String, Object> getColumnKeys() {
-		return columnKeys;
-	}
+    public void setFooter(String[] footer) {
+        this.footer = footer;
+    }
 
-	public void setColumnKeys(Map<String, Object> columnKeys) {
-		this.columnKeys = columnKeys;
-	}
+    public Map<String, Object> getColumnKeys() {
+        return columnKeys;
+    }
 
-	public Collection<TableCell[]> getTopRows() {
-		return topRows;
-	}
+    public void setColumnKeys(Map<String, Object> columnKeys) {
+        this.columnKeys = columnKeys;
+    }
 
-	public void setTopRows(Collection<TableCell[]> topRows) {
-		this.topRows = topRows;
-	}
+    public Collection<TableCell[]> getTopRows() {
+        return topRows;
+    }
 
-	public Collection<TableCell[]> getBottomRows() {
-		return bottomRows;
-	}
+    public void setTopRows(Collection<TableCell[]> topRows) {
+        this.topRows = topRows;
+    }
 
-	public void setBottomRows(Collection<TableCell[]> bottomRows) {
-		this.bottomRows = bottomRows;
-	}
+    public Collection<TableCell[]> getBottomRows() {
+        return bottomRows;
+    }
 
-	public String[] getHeaderTooltip() {
-		return headerTooltip;
-	}
+    public void setBottomRows(Collection<TableCell[]> bottomRows) {
+        this.bottomRows = bottomRows;
+    }
 
-	public void setHeaderTooltip(String[] headerTooltip) {
-		this.headerTooltip = headerTooltip;
-	}
+    public String[] getHeaderTooltip() {
+        return headerTooltip;
+    }
+
+    public void setHeaderTooltip(String[] headerTooltip) {
+        this.headerTooltip = headerTooltip;
+    }
+
+    public String[] getColumnWidths() {
+        return columnWidths;
+    }
+
+    public void setColumnWidths(String[] columnWidths) {
+        this.columnWidths = columnWidths;
+    }
 }

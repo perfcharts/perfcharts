@@ -60,6 +60,9 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
     		var isFloat = cell.valueType === "double" || cell.valueType === "float";
     		var isNumber = isFloat || typeof cell.value === "number"
     				|| cell.valueType === "int" || cell.valueType === "long";
+    		if (isNumber && cell.value !== null && cell.cssClass && cell.cssClass.indexOf("perfcharts-unit-ms2s") >= 0) {
+    		    cell.value = parseFloat(cell.value) / 1000.0;
+    		}
     		var showText = cell.value;
     		if (isFloat) {
     			showText = cell.value !== null ? cell.value.toFixed(3)
@@ -77,7 +80,7 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
     				$("<h4 class='perfcharts-subtitle'/>").text(chart.subtitle));
     		var $table_container = $("<div class='perfcharts-table-container'>")
     				.appendTo($chart);
-    		var $table = $("<table class='table table-bordered perfcharts-table'/>").appendTo(
+    		var $table = $("<table/>").addClass("perfcharts-table table table-bordered table-striped table-hover").appendTo(
     				$table_container);
     		if (chart.key)
     			$table.attr("data-key", chart.key);
@@ -88,6 +91,8 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
     				var $th = $("<th/>").text(chart.header[i]).appendTo($tableHeaderRow);
     				if (chart.headerTooltip && chart.headerTooltip[i])
     				    $th.attr('title', chart.headerTooltip[i]);
+    				if (chart.columnWidths && chart.columnWidths[i] !== null)
+                        $th.css('width', chart.columnWidths[i]);
     			}
     		}
     		if (chart.topRows) {
@@ -236,6 +241,20 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
 			// }
 		});
 
+        function binary_search_for_tick(ticks, x) {
+            var l = 0, r = ticks.length - 1;
+            while (l <= r) {
+                var mid = l + ((r - l) >> 1);
+                if (ticks[mid][0] == x)
+                    return ticks[mid][1];
+                if (ticks[mid][0] < x)
+                    l = mid + 1;
+                else
+                    r = mid - 1;
+            }
+            return null;
+        }
+
 		// tooltip
 		$placeholder.bind("plothover", function(event, pos, item) {
 			// var plot = $placeholder.data("plot");
@@ -315,12 +334,9 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
 		var show = true;
 		if (series._show === false)
 			show = false;
-		return '<a class="'
+		return '<span class="'
 				+ (show ? 'perfcharts-lenged-label-active' : 'perfcharts-lenged-label-inactive')
-				+ '" onclick="Perfcharts.eventHandlers.toggleSeries(this, ' + series._index + ');">' + label + '</a>';
-//				+ '" onclick="ChartGeneration.eventHandlers.toggleSeries(this, '
-//				+ series._reportIndex + ", " + series._chartIndex + ", "
-//				+ series._index + ');">' + label + '</a>';
+				+ '" onclick="Perfcharts.eventHandlers.toggleSeries(this, ' + series._index + ');">' + label + '</span>';
 	}
 	function yTickFormatter(num, yaxis) {
 		var str, intLength, result, negative = num < 0, dotPos;
@@ -434,7 +450,7 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
 					var newTick = map[num];
 					if (!newTick)
 						return "";
-					return "<div class='category_tick'>" + newTick + "</div>";
+					return "<div class='perfcharts-categorytick'>" + newTick + "</div>";
 				}
 			}
 			options.series.bars = {
@@ -463,7 +479,7 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
 					var newTick = chart.stringMap[chart._groupId2RawXMap[num]];
 					if (!newTick)
 						return "";
-					return "<div class='category_tick'>" + newTick + "</div>";
+					return "<div class='perfcharts-categorytick'>" + newTick + "</div>";
 				},
 				labelWidth : 100
 			}

@@ -84,14 +84,19 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 
         String[] tooltip = new String[]{"transaction name, where transaction is a collection of end-user actions that represent typical application activity",
                 "number of repeated executions",
-                "average response time in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
-                "minimum response time in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
-                "response time of 90% line in milliseconds, where response time is the total amount of time it takes to respond to a request for service",
-                "maximum response time in milliseconds, where the 90th percentile response time value is the value for which 90% of the data points are smaller and 10% are bigger",
+                "average response time in seconds, where response time is the total amount of time it takes to respond to a request for service",
+                "minimum response time in seconds, where response time is the total amount of time it takes to respond to a request for service",
+                "response time of 90% line in seconds, where response time is the total amount of time it takes to respond to a request for service",
+                "maximum response time in seconds, where the 90th percentile response time value is the value for which 90% of the data points are smaller and 10% are bigger",
                 "standard deviation of response times, where standard deviation is a measure of the variability of a data set",
-                "latency in milliseconds, where latency is a time interval between the stimulation and response",
+                "latency in seconds, where latency is a time interval between the stimulation and response",
                 "percentage of failed transactions, calculated by the number of failed requests / the number of all requests"
         };
+
+        GenericTable chart = new GenericTable(factory.createFormatter());
+        chart.setColumnWidths(new String[] {
+                null, "8.3%", "8.3%", "8.3%", "8.3%", "8.3%", "8.3%", "8.3%"
+        });
 
         Map<String, Object> columnKeys = new HashMap<String, Object>();
         for (int i = 0; i < header.length; i++) {
@@ -165,11 +170,6 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
             if (!RTs.isEmpty()) {
                 double avgRT = 1.0 * sumRT / numRTsuccess;
                 tableRow[2] = new TableCell(avgRT);
-                if (Double.isInfinite(avgRT) || Double.isNaN(avgRT)
-                        || avgRT >= 5000) {
-                    tableRow[2].setCssClass("perfcharts_warning");
-                    tableRow[0].setCssClass("perfcharts_warning");
-                }
                 tableRow[3] = new TableCell(minRT);
                 tableRow[4] = new TableCell(Utilities.fastSelect(RTs,
                         (int) Math.round((RTs.size() - 1) * 0.9)).doubleValue());
@@ -183,6 +183,12 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
 //				tableRow[9] = new TableCell(throughput * 1000 * 60 * 60);
 //				tableRow[10] = new TableCell(bytesSum / 1.024 / duration);
 //				tableRow[11] = new TableCell(1.0 * bytesSum / numRTsuccess);
+
+                tableRow[2].setCssClass("perfcharts-unit-ms2s");
+                tableRow[3].setCssClass("perfcharts-unit-ms2s");
+                tableRow[4].setCssClass("perfcharts-unit-ms2s");
+                tableRow[5].setCssClass("perfcharts-unit-ms2s");
+                tableRow[7].setCssClass("perfcharts-unit-ms2s");
             } else {
                 tableRow[2] = new TableCell(Double.NaN);
                 tableRow[3] = new TableCell(Double.NaN);
@@ -200,8 +206,8 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
             tableRow[8] = new TableCell(errorPerc);
             if (Double.isInfinite(errorPerc) || Double.isNaN(errorPerc)
                     || errorPerc > 0.0) {
-                tableRow[8].setCssClass("perfcharts_warning");
-                tableRow[0].setCssClass("perfcharts_warning");
+                tableRow[8].setCssClass("perfcharts-warning");
+                tableRow[0].setCssClass("perfcharts-warning");
             }
             tableRows.add(tableRow);
 
@@ -253,17 +259,21 @@ public class JmeterSimpleSummaryChartGenerator extends JmeterSummaryChartGenerat
         totalRow[6] = (new TableCell(Math.sqrt(sumRTSquaredTotal
                 / numRTsuccessTotal - avgRTTotal * avgRTTotal)));
         totalRow[8] = new TableCell(100.0 * numRTfailureTotal / samplesTotal);
-        long durationTotal = maxTimestampTotal - minTimestampTotal + 1;
+//        long durationTotal = maxTimestampTotal - minTimestampTotal + 1;
 //		double throughput = 1.0 * numRTsuccessTotal / durationTotal;
 //		totalRow[9] = new TableCell(throughput * 1000 * 60 * 60);
 //		totalRow[10] = new TableCell(bytesSumTotal / 1.024 / durationTotal);
 //		totalRow[11] = new TableCell(1.0 * bytesSumTotal / numRTsuccessTotal);
         // tableRows.add(totalRow);
+        totalRow[2].setCssClass("perfcharts-unit-ms2s");
+        totalRow[3].setCssClass("perfcharts-unit-ms2s");
+        totalRow[4].setCssClass("perfcharts-unit-ms2s");
+        totalRow[5].setCssClass("perfcharts-unit-ms2s");
+        totalRow[7].setCssClass("perfcharts-unit-ms2s");
         List<TableCell[]> bottomRows = new ArrayList<TableCell[]>(1);
         bottomRows.add(totalRow);
 
         // complete the chart
-        GenericTable chart = new GenericTable(factory.createFormatter());
         chart.setTitle(config.getTitle());
         chart.setSubtitle(config.getSubtitle());
         chart.setKey(config.getKey());
