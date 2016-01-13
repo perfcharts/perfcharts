@@ -31,6 +31,12 @@
 .perfcharts-worse:before {
     content : "+"
 }
+.perfcharts-worse:after {
+    content : "\2191"
+}
+.perfcharts-better:after {
+    content : "\2193"
+}
 
 .perfcharts-lenged-label-active, .perfcharts-lenged-label-inactive {
     font-size: 1.1em;

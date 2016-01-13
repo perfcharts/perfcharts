@@ -21,14 +21,13 @@ import java.util.regex.Pattern;
 public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator {
     private final static Logger LOGGER = Logger
             .getLogger(PerformanceComparisonTableGenerator.class.getName());
+    private final static Pattern txPattern = Pattern.compile("TX-(.+)");
     private PerformanceSimpleComparisonTableConfig config;
 
     public PerformanceSimpleComparisonTableGenerator(
             PerformanceSimpleComparisonTableConfig config) {
         this.config = config;
     }
-
-    private final static Pattern txPattern = Pattern.compile("TX-(.+)");
 
     @Override
     public GenericTable generate(DataTable dataTable) throws Exception {
@@ -59,6 +58,10 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
         });
         table.setColumnWidths(new String[]{
                 null, "10%", "10%", "10%", "10%", "10%", "10%", "10%"
+        });
+        table.setSortList(new int[][]{
+                new int[]{4, 0},
+                new int[]{5, 0}
         });
 
         FieldSelector labelField = new IndexFieldSelector(0);
@@ -149,7 +152,7 @@ public class PerformanceSimpleComparisonTableGenerator implements ChartGenerator
             if (Double.isFinite(diffError)) {
                 if (diffError <= -0.001)
                     row[7].setCssClass("perfcharts-better");
-                else if(diffError >= 0.001)
+                else if (diffError >= 0.001)
                     row[7].setCssClass("perfcharts-worse");
             }
 

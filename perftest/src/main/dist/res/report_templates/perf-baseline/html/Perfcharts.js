@@ -131,9 +131,13 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
     				}
     			}
     		}
-    		$table.tablesorter({
-    			cssInfoBlock : "tablesorter-no-sort"
-    		}).stickyTableHeaders();
+    		var tablesorter_options = {
+    		    cssInfoBlock : "tablesorter-no-sort"
+            };
+            if (chart.sortList) {
+                tablesorter_options.sortList = chart.sortList;
+            }
+    		$table.tablesorter(tablesorter_options).stickyTableHeaders();
 };
 
 	function BITree(N) {

@@ -43,6 +43,13 @@ public class GenericTableFormatterImpl implements GenericTableFormatter {
         if (chart.getColumnWidths() != null) {
             chartJSON.put("columnWidths", new JSONArray(chart.getColumnWidths()));
         }
+        if (chart.getSortList() != null) {
+            JSONArray sortList = new JSONArray();
+            for (int[] item : chart.getSortList()) {
+                sortList.put(new JSONArray(item));
+            }
+            chartJSON.put("sortList", sortList);
+        }
         return chartJSON.toString();
     }
 
