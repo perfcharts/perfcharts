@@ -1,5 +1,6 @@
 package perfcharts.formatter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import perfcharts.config.AxisMode;
  *
  */
 public class FlotChartFormatter implements Chart2DFormatter {
-	public String format(Chart2D graph) throws Exception {
+	public String format(Chart2D graph) throws IOException, InterruptedException {
 		JSONObject chartJson = new JSONObject();
 		chartJson.put("key", graph.getKey());
 		chartJson.put("title", graph.getTitle());

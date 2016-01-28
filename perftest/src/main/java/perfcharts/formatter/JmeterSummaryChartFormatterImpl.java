@@ -1,5 +1,6 @@
 package perfcharts.formatter;
 
+import java.io.IOException;
 import java.util.List;
 
 import perfcharts.chart.JmeterSummaryChart;
@@ -9,7 +10,7 @@ import perfcharts.common.Utilities;
 public class JmeterSummaryChartFormatterImpl implements
 		JmeterSummaryChartFormatter {
 
-	public String format(JmeterSummaryChart chart) throws Exception {
+	public String format(JmeterSummaryChart chart) throws IOException, InterruptedException {
 		StringBuffer sb = new StringBuffer(
 				"{\"chartType\":\"JmeterSummaryChart\"");
 		if (chart.getTitle() != null)

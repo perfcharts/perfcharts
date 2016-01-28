@@ -2,6 +2,8 @@ package perfcharts.formatter;
 
 import perfcharts.chart.Chart;
 
+import java.io.IOException;
+
 /**
  * A {@link ChartFormatter} can format a generated {@link Chart} to string.
  * 
@@ -16,5 +18,5 @@ public interface ChartFormatter<T extends Chart> {
 	 * @return formatted string
 	 * @throws Exception
 	 */
-	public String format(T chart) throws Exception;
+	public String format(T chart) throws IOException, InterruptedException;
 }

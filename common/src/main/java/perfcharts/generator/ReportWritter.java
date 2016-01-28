@@ -1,5 +1,6 @@
 package perfcharts.generator;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
@@ -28,7 +29,7 @@ public class ReportWritter {
 	 *            the {@link OutputStream} for writing
 	 * @throws Exception
 	 */
-	public void write(Report report, OutputStream out) throws Exception {
+	public void write(Report report, OutputStream out) throws IOException, InterruptedException {
 		StringBuilder sb = new StringBuilder("{");
 		int validChartCount = 0;
 		sb.append("\"charts\":[");

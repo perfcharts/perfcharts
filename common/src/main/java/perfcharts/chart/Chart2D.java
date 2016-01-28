@@ -1,5 +1,6 @@
 package perfcharts.chart;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -156,7 +157,7 @@ public class Chart2D extends Chart {
 	 * @throws Exception
 	 */
 	@Override
-	public String format() throws Exception {
+	public String format() throws IOException, InterruptedException {
 		return formatter.format(this);
 	}
 	

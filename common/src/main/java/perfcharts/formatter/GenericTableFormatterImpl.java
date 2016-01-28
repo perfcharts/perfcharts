@@ -5,10 +5,12 @@ import org.json.JSONObject;
 import perfcharts.chart.GenericTable;
 import perfcharts.chart.TableCell;
 
+import java.io.IOException;
+
 public class GenericTableFormatterImpl implements GenericTableFormatter {
 
     @Override
-    public String format(GenericTable chart) throws Exception {
+    public String format(GenericTable chart) throws IOException, InterruptedException {
         JSONObject chartJSON = new JSONObject();
         chartJSON.put("chartType", "TABLE");
         chartJSON.put("title", chart.getTitle());

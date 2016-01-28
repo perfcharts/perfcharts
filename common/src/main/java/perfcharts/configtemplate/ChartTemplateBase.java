@@ -1,6 +1,7 @@
 package perfcharts.configtemplate;
 
 import perfcharts.common.FieldSelector;
+import perfcharts.common.IndexFieldSelector;
 
 /**
  * Defines the default template of charts.
@@ -9,6 +10,8 @@ import perfcharts.common.FieldSelector;
  *
  */
 public abstract class ChartTemplateBase implements ChartConfigTemplate {
+
+	private static final FieldSelector<String> DEFAULT_LABEL_FIELD = new IndexFieldSelector<>(0);
 	/**
 	 * the label field of data row
 	 */
@@ -26,11 +29,13 @@ public abstract class ChartTemplateBase implements ChartConfigTemplate {
 
 	/**
 	 * Get the label field of data row
-	 * 
+	 *
 	 * @return a label field
 	 */
 	public FieldSelector getLabelField() {
-		return labelField;
+		if (labelField != null)
+			return labelField;
+		return DEFAULT_LABEL_FIELD;
 	}
 
 	/**

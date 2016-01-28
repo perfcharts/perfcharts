@@ -2,18 +2,18 @@ package perfcharts.perftest.reporthandler;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
-import perfcharts.config.ChartConfig;
+import perfcharts.chart.Report;
 import perfcharts.config.ReportConfig;
 import perfcharts.configtemplate.*;
-import perfcharts.generator.ChartFactory;
+import perfcharts.generator.ReportGenerator;
+import perfcharts.generator.ReportWritter;
 import perfcharts.handler.ReportTypeHandler;
 import perfcharts.perftest.parser.DataParser;
 import perfcharts.perftest.parser.DataParserFactory;
 import perfcharts.perftest.parser.DataParserFactoryImpl;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -43,13 +43,11 @@ public class PerfBaselineReportHandler implements ReportTypeHandler {
         configTemplates.add(new TopTxWithHighestAvgRTBarChartTemplate());
         configTemplates.add(new JmeterAverageRTChartTemplate());
         configTemplates.add(new JmeterRTChartTemplate());
-        config.setConfigTemplate(configTemplates);
+        config.setConfigTemplates(configTemplates);
+        //config.setLabelField(new IndexFieldSelector<>(0));
         return config;
     }
 
-    /*
-    Args: [options] input_dir
-     */
     @Override
     public void handle(List<String> argList) throws IOException, InterruptedException {
         // parse command line
@@ -88,6 +86,7 @@ public class PerfBaselineReportHandler implements ReportTypeHandler {
             metaDir.mkdirs();
 
         // parse raw input files
+        Map<String, List<String>> parsedFileMap = new HashMap<>();
         for (String fileName :
                 inputDir.list()) {
             File file = new File(inputDir, fileName);
@@ -109,16 +108,33 @@ public class PerfBaselineReportHandler implements ReportTypeHandler {
             InputStream fileIn = new BufferedInputStream(new FileInputStream(file));
             File dir = new File(metaDir, ext);
             dir.mkdirs();
-            OutputStream fileOut = new FileOutputStream(new File(dir, fileName + ".csv"));
-            dataParser.parse(fileIn, fileOut);
+
+            if ("jtl".equalsIgnoreCase(ext)) {
+                // parse all .jtl files to a single file
+                fileName = "performance";
+            }
+
+            File parsedFile = new File(dir, fileName + ".csv");
+            OutputStream parsedFileOut = new FileOutputStream(parsedFile, true);
+            dataParser.parse(fileIn, parsedFileOut);
+            List<String> parsedFiles = parsedFileMap.get(ext);
+            if (parsedFiles == null) {
+                parsedFileMap.put(ext, parsedFiles = new LinkedList<>());
+            }
+            parsedFiles.add(parsedFile.getAbsolutePath());
         }
 
-        // generate report
-        ReportConfig perfReportConfig = createPerformanceReportConfig();
-        for (ChartConfigTemplate chartTemplate:
-             perfReportConfig.getConfigTemplate()) {
-            ChartConfig<?> chartConfig = chartTemplate.generateChartConfig();
-            ChartFactory<?> chartFactory = chartConfig.createChartFactory();
+        // generate performance report
+        List<String> parsedJtlFiles = parsedFileMap.get("jtl");
+        if (parsedJtlFiles != null && !parsedJtlFiles.isEmpty()) {
+            InputStream parsedFileIn = new FileInputStream(parsedJtlFiles.get(0));
+            ReportConfig perfReportConfig = createPerformanceReportConfig();
+            ReportGenerator generator = new ReportGenerator(perfReportConfig);
+            Report report = generator.generate(parsedFileIn);
+
+            // write to output stream
+            ReportWritter reportWritter = new ReportWritter();
+            reportWritter.write(report, System.out);
         }
 
     }

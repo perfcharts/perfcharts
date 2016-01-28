@@ -2,6 +2,7 @@ package perfcharts.chart;
 
 import perfcharts.formatter.ChartFormatter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class GenericTable extends Chart {
     }
 
     @Override
-    public String format() throws Exception {
+    public String format() throws IOException, InterruptedException {
         return formatter.format(this);
     }
 

@@ -1,5 +1,7 @@
 package perfcharts.chart;
 
+import java.io.IOException;
+
 /**
  * Represents a generated chart
  * 
@@ -47,7 +49,7 @@ public abstract class Chart {
 	 * @return a string
 	 * @throws Exception
 	 */
-	public abstract String format() throws Exception;
+	public abstract String format() throws IOException, InterruptedException;
 
 	/**
 	 * get the subtitle of configured chart

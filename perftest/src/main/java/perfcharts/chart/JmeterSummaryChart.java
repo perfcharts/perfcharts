@@ -1,5 +1,6 @@
 package perfcharts.chart;
 
+import java.io.IOException;
 import java.util.List;
 
 import perfcharts.formatter.JmeterSummaryChartFormatter;
@@ -51,7 +52,7 @@ public class JmeterSummaryChart extends Chart {
 	}
 
 	@Override
-	public String format() throws Exception {
+	public String format() throws IOException, InterruptedException {
 		return formatter.format(this);
 	}
 

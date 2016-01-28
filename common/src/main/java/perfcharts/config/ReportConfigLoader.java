@@ -2,7 +2,6 @@ package perfcharts.config;
 
 import perfcharts.common.AppData;
 import perfcharts.common.FieldSelector;
-import perfcharts.common.IndexFieldSelector;
 import perfcharts.common.Utilities;
 import perfcharts.configtemplate.ChartConfigTemplate;
 
@@ -60,7 +59,7 @@ public class ReportConfigLoader {
         ReportConfig cfg = new ReportConfig();
         cfg.setBasePath(configFile.getParent());
         List<ChartConfigTemplate> list = new ArrayList<ChartConfigTemplate>();
-        cfg.setConfigTemplate(list);
+        cfg.setConfigTemplates(list);
         XMLStreamReader reader = XMLInputFactory.newInstance()
                 .createXMLStreamReader(in);
         int level = 0; // the level in the XML tree when reading the
@@ -112,10 +111,10 @@ public class ReportConfigLoader {
                                         "outputFile"));
                                 String labelFieldAttr = reader.getAttributeValue(null,
                                         "labelField");
-                                cfg.setLabelField(labelField = new IndexFieldSelector(
-                                        labelFieldAttr == null
-                                                || labelFieldAttr.isEmpty() ? 0
-                                                : Integer.parseInt(labelFieldAttr)));
+//                                cfg.setLabelField(labelField = new IndexFieldSelector(
+//                                        labelFieldAttr == null
+//                                                || labelFieldAttr.isEmpty() ? 0
+//                                                : Integer.parseInt(labelFieldAttr)));
                                 break;
                             case 2: // the second level
                                 if (reader.getLocalName().equals("chartConfigTemplate")) {

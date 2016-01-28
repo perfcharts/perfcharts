@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import perfcharts.calc.Chart2DCalculation;
 import perfcharts.common.FieldSelector;
+import perfcharts.common.IndexFieldSelector;
 import perfcharts.generator.Chart2DSeriesConfigBuilder;
 
 /**
