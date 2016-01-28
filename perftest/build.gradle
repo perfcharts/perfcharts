@@ -11,9 +11,11 @@ repositories {
 }
 
 dependencies {
-    compile project(':generator')
+    compile project(':common')
+    compile project(':perftest-parser')
 	compile 'org.json:json:20150729'
 	compile 'org.apache.commons:commons-csv:1.2'
+    compile 'commons-io:commons-io:2.4'
 }
 
 jar {

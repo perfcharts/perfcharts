@@ -4,6 +4,8 @@ import perfcharts.generator.JmeterSimpleSummaryChartFactoryImpl;
 import perfcharts.generator.JmeterSummaryChartFactory;
 import perfcharts.generator.JmeterSummaryChartFactoryImpl;
 
+import java.io.IOException;
+
 /**
  * The configuration for Jmeter summary chart
  * 
@@ -13,7 +15,7 @@ import perfcharts.generator.JmeterSummaryChartFactoryImpl;
 public class JmeterSimpleSummaryChartConfig extends
 		JmeterSummaryChartConfig {
 	@Override
-	public JmeterSummaryChartFactory createChartFactory() throws Exception {
+	public JmeterSummaryChartFactory createChartFactory() throws IOException, InterruptedException {
 		return new JmeterSimpleSummaryChartFactoryImpl();
 	}
 

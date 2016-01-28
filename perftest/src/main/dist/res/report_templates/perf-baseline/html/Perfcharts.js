@@ -76,68 +76,69 @@ Perfcharts.TablePainer.prototype.paint = function($chart, chart) {
     			$td.css("text-align", "right");
     		return $td;
     }
-
-    $chart.append($("<h3 class='perfcharts-title'/>").text(chart.title)).append(
-    				$("<h4 class='perfcharts-subtitle'/>").text(chart.subtitle));
-    		var $table_container = $("<div class='perfcharts-table-container'>")
-    				.appendTo($chart);
-    		var $table = $("<table/>").addClass("perfcharts-table table table-bordered table-striped table-hover").appendTo(
-    				$table_container);
-    		if (chart.key)
-    			$table.attr("data-key", chart.key);
-    		if (chart.header) {
-    		    var $thead = $("<thead/>").appendTo($table);
-    			var $tableHeaderRow = $("<tr/>").appendTo($thead);
-    			for (var i = 0; i < chart.header.length; ++i) {
-    				var $th = $("<th/>").text(chart.header[i]).appendTo($tableHeaderRow);
-    				if (chart.headerTooltip && chart.headerTooltip[i])
-    				    $th.attr('title', chart.headerTooltip[i]);
-    				if (chart.columnWidths && chart.columnWidths[i] !== null)
-                        $th.css('width', chart.columnWidths[i]);
-    			}
-    		}
-    		if (chart.topRows) {
-    			var $thead = $("<tbody class=\"tablesorter-no-sort\"/>").appendTo(
-    					$table);
-    			for (var i = 0; i < chart.topRows.length; ++i) {
-    				var $tableRow = $("<tr/>").appendTo($thead);
-    				var row = chart.topRows[i];
-    				for (var j = 0; j < row.length; ++j) {
-    					var cell = row[j];
-    					createTableCell(row[j]).appendTo($tableRow);
-    				}
-    			}
-    		}
-    		if (chart.rows) {
-    			var $tbody = $("<tbody/>").appendTo($table);
-    			for (var i = 0; i < chart.rows.length; ++i) {
-    				var $tableRow = $("<tr/>").appendTo($tbody);
-    				var row = chart.rows[i];
-    				for (var j = 0; j < row.length; ++j) {
-    					var cell = row[j];
-    					createTableCell(row[j]).appendTo($tableRow);
-    				}
-    			}
-    		}
-    		if (chart.bottomRows) {
-    			var $tfoot = $("<tfoot class=\"tablesorter-no-sort\"/>").appendTo(
-    					$table);
-    			for (var i = 0; i < chart.bottomRows.length; ++i) {
-    				var $tableRow = $("<tr/>").appendTo($tfoot);
-    				var row = chart.bottomRows[i];
-    				for (var j = 0; j < row.length; ++j) {
-    					var cell = row[j];
-    					createTableCell(row[j]).appendTo($tableRow);
-    				}
-    			}
-    		}
-    		var tablesorter_options = {
-    		    cssInfoBlock : "tablesorter-no-sort"
-            };
-            if (chart.sortList) {
-                tablesorter_options.sortList = chart.sortList;
+    $("<h3 class='perfcharts-title'/>").text(chart.title).appendTo($chart);
+    $("<h4 class='perfcharts-subtitle'/>").text(chart.subtitle).appendTo($chart);
+    //$("<span class='badge'>?</span>").appendTo($chart);
+    //var $description = $("<div/>").text(chart.description).appendTo($chart);
+    var $table_container = $("<div class='perfcharts-table-container'>")
+            .appendTo($chart);
+    var $table = $("<table/>").addClass("perfcharts-table table table-bordered table-striped table-hover").appendTo(
+            $table_container);
+    if (chart.key)
+        $table.attr("data-key", chart.key);
+    if (chart.header) {
+        var $thead = $("<thead/>").appendTo($table);
+        var $tableHeaderRow = $("<tr/>").appendTo($thead);
+        for (var i = 0; i < chart.header.length; ++i) {
+            var $th = $("<th/>").css("vertical-align", "middle").text(chart.header[i]).appendTo($tableHeaderRow);
+            if (chart.headerTooltip && chart.headerTooltip[i])
+                $th.attr('title', chart.headerTooltip[i]);
+            if (chart.columnWidths && chart.columnWidths[i] !== null)
+                $th.css('width', chart.columnWidths[i]);
+        }
+    }
+    if (chart.topRows) {
+        var $thead = $("<tbody class=\"tablesorter-no-sort\"/>").appendTo(
+                $table);
+        for (var i = 0; i < chart.topRows.length; ++i) {
+            var $tableRow = $("<tr/>").appendTo($thead);
+            var row = chart.topRows[i];
+            for (var j = 0; j < row.length; ++j) {
+                var cell = row[j];
+                createTableCell(row[j]).appendTo($tableRow);
             }
-    		$table.tablesorter(tablesorter_options).stickyTableHeaders();
+        }
+    }
+    if (chart.rows) {
+        var $tbody = $("<tbody/>").appendTo($table);
+        for (var i = 0; i < chart.rows.length; ++i) {
+            var $tableRow = $("<tr/>").appendTo($tbody);
+            var row = chart.rows[i];
+            for (var j = 0; j < row.length; ++j) {
+                var cell = row[j];
+                createTableCell(row[j]).appendTo($tableRow);
+            }
+        }
+    }
+    if (chart.bottomRows) {
+        var $tfoot = $("<tfoot class=\"tablesorter-no-sort\"/>").appendTo(
+                $table);
+        for (var i = 0; i < chart.bottomRows.length; ++i) {
+            var $tableRow = $("<tr/>").appendTo($tfoot);
+            var row = chart.bottomRows[i];
+            for (var j = 0; j < row.length; ++j) {
+                var cell = row[j];
+                createTableCell(row[j]).appendTo($tableRow);
+            }
+        }
+    }
+    var tablesorter_options = {
+        cssInfoBlock : "tablesorter-no-sort"
+    };
+    if (chart.sortList) {
+        tablesorter_options.sortList = chart.sortList;
+    }
+    $table.tablesorter(tablesorter_options).stickyTableHeaders();
 };
 
 	function BITree(N) {

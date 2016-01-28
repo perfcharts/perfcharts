@@ -45,3 +45,6 @@
 .perfcharts-lenged-label-inactive {
     text-decoration: line-through;
 }
+.perfcharts-title, .perfcharts-subtitle {
+    text-align: center;
+}

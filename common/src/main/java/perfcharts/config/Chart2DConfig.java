@@ -1,5 +1,6 @@
 package perfcharts.config;
 
+import java.io.IOException;
 import java.util.List;
 
 import perfcharts.chart.Chart2D;
@@ -215,7 +216,7 @@ public class Chart2DConfig extends ChartConfigBase<Chart2D> {
 	}
 
 	@Override
-	public Chart2DFactory createChartFactory() throws Exception {
+	public Chart2DFactory createChartFactory() throws IOException, InterruptedException {
 		return new Chart2DFactoryImpl();
 	}
 

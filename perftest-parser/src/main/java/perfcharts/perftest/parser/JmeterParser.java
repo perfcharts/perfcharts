@@ -12,7 +12,7 @@ import java.io.*;
 public class JmeterParser implements DataParser {
 
 	@Override
-	public void parse(InputStream in, OutputStream out) throws Exception {
+	public void parse(InputStream in, OutputStream out) throws IOException {
 		final int BUFFER_SIZE = 512;
 		in.mark(BUFFER_SIZE);
 		byte[] buffer = new byte[BUFFER_SIZE];

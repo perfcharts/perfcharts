@@ -71,6 +71,9 @@ function createTabHeadsForMonitoringReport(hostID, charts, $tab) {
     }
 }
 
+// create report description
+var $description = $("<div/>").html(ChartGeneration.data.description).appendTo("#report-description");
+
 var $chartTabs = $('#chartTabs');
 app_router.on('route:switchToPerformance', function( id ){
     $("#my-navbar li").removeClass('active');

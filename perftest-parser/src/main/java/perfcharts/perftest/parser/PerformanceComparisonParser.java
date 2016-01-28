@@ -20,7 +20,7 @@ public class PerformanceComparisonParser implements DataParser {
             .getLogger(PerformanceComparisonParser.class.getName());
 
     @Override
-    public void parse(InputStream in, OutputStream out) throws Exception {
+    public void parse(InputStream in, OutputStream out) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
         CSVParser csvParser = null;

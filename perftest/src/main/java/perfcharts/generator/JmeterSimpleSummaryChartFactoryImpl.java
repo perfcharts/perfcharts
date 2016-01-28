@@ -3,7 +3,6 @@ package perfcharts.generator;
 import perfcharts.chart.GenericTable;
 import perfcharts.config.ChartConfig;
 import perfcharts.config.JmeterSimpleSummaryChartConfig;
-import perfcharts.config.JmeterSummaryChartConfig;
 import perfcharts.formatter.GenericTableFormatter;
 import perfcharts.formatter.GenericTableFormatterImpl;
 

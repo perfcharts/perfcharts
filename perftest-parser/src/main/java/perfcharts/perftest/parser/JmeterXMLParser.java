@@ -21,9 +21,14 @@ public class JmeterXMLParser implements DataParser {
             .getName());
 
     public void parse(InputStream in, OutputStream out)
-            throws XMLStreamException, IOException {
-        XMLStreamReader reader = XMLInputFactory.newInstance()
-                .createXMLStreamReader(in);
+            throws IOException {
+        XMLStreamReader reader = null;
+        try {
+            reader = XMLInputFactory.newInstance()
+                    .createXMLStreamReader(in);
+        } catch (XMLStreamException e) {
+            throw new IOException(e);
+        }
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
         CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
         Date startTime = Settings.getInstance().getStartTime();

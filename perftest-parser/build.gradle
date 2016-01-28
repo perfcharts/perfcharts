@@ -11,7 +11,8 @@ repositories {
 }
 
 dependencies {
-	compile project(':generator')
+	compile project(':common')
+	//compile project(':generator')
 	compile 'org.apache.commons:commons-csv:1.2'
 }
 

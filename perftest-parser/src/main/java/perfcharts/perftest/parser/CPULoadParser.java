@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -27,8 +26,7 @@ import perfcharts.common.AppData;
 public class CPULoadParser implements DataParser {
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("y-M-d H:m:s", Locale.ENGLISH);
 
-	public void parse(InputStream in, OutputStream out) throws IOException,
-			ParseException {
+	public void parse(InputStream in, OutputStream out) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
 		String lineStr;

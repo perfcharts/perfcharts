@@ -21,7 +21,7 @@ public class PerfTrendParser implements DataParser {
             .getName());
 
     @Override
-    public void parse(InputStream in, OutputStream out) throws Exception {
+    public void parse(InputStream in, OutputStream out) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
         CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT);

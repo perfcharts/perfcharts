@@ -27,7 +27,7 @@ public class CustomZabbixParser implements DataParser {
 			.getLogger(CustomZabbixParser.class.getName());
 
 	@Override
-	public void parse(InputStream in, OutputStream out) throws Exception {
+	public void parse(InputStream in, OutputStream out) throws IOException {
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(
 				in));
 		final CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);

@@ -3,6 +3,8 @@ package perfcharts.config;
 import perfcharts.chart.Chart;
 import perfcharts.generator.ChartFactory;
 
+import java.io.IOException;
+
 /**
  * Represents a chart configuration.
  * A ChartConfig interface defines the {@link #createChartFactory()} method,
@@ -18,5 +20,5 @@ public interface ChartConfig<T extends Chart> {
 	 * @return
 	 * @throws Exception
 	 */
-	public ChartFactory<T> createChartFactory() throws Exception;
+	public ChartFactory<T> createChartFactory() throws IOException, InterruptedException;
 }

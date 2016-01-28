@@ -11,20 +11,17 @@ repositories {
 }
 
 dependencies {
-    compile project(':common')
-    compile project(':perftest')
-    compile project(':perftest-parser')
     compile 'org.json:json:20150729'
     compile 'org.apache.commons:commons-csv:1.2'
     compile 'commons-cli:commons-cli:1.3.1'
 }
 
 jar.doFirst {
-    baseName = 'perfcharts-generator'
-    manifest {
-        attributes 'Main-Class': 'GeneratorLauncher',
-                'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
-    }
+    baseName = 'perfcharts-common'
+//    manifest {
+//        attributes 'Main-Class': 'GeneratorLauncher',
+//                'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
+//    }
 }
 
 apply plugin: 'distribution'

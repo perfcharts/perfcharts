@@ -16,8 +16,7 @@ import java.util.*;
  * @author Rayson Zhu
  */
 public class NMONParser implements DataParser {
-    public void parse(InputStream in, OutputStream out) throws IOException,
-            ParseException {
+    public void parse(InputStream in, OutputStream out) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
         Map<Integer, Long> timeTable = new HashMap<Integer, Long>(16000);
@@ -47,8 +46,13 @@ public class NMONParser implements DataParser {
             if (rec.get(0).equals("ZZZZ") && rec.size() >= 4) {
                 int tsLabelValue = Integer.parseInt(rec.get(1)
                         .substring(1));
-                Date date = timeFormat.parse(rec.get(2) + " "
-                        + rec.get(3));
+                Date date = null;
+                try {
+                    date = timeFormat.parse(rec.get(2) + " "
+                            + rec.get(3));
+                } catch (ParseException e) {
+                    throw new IOException(e);
+                }
                 if (startTime != null && date.before(startTime)
                         || endTime != null && date.after(endTime))
                     continue;
@@ -203,7 +207,11 @@ public class NMONParser implements DataParser {
                 continue;
             NMONItemParser itemParser = keyParserMap.get(rec.get(0));
             if (itemParser != null)
-                itemParser.parse(csvPrinter, rec, timeTable);
+                try {
+                    itemParser.parse(csvPrinter, rec, timeTable);
+                } catch (ParseException e) {
+                    throw new IOException(e);
+                }
         }
         csvPrinter.flush();
     }
