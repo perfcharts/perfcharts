@@ -63,8 +63,9 @@ public abstract class ChartTemplateBase implements ChartConfigTemplate {
 	 * @param subtitle
 	 *            a subtitle
 	 */
-	public void setSubtitle(String subtitle) {
+	public ChartTemplateBase setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
+		return this;
 	}
 
 	/**
@@ -82,8 +83,9 @@ public abstract class ChartTemplateBase implements ChartConfigTemplate {
 	 * @param title
 	 *            a title
 	 */
-	public void setTitle(String title) {
+	public ChartTemplateBase setTitle(String title) {
 		this.title = title;
+		return this;
 	}
 
 	public String getKey() {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.json.JSONObject;
 import perfcharts.chart.Chart;
 import perfcharts.chart.Report;
 
@@ -31,6 +32,7 @@ public class ReportWritter {
 	 */
 	public void write(Report report, OutputStream out) throws IOException, InterruptedException {
 		StringBuilder sb = new StringBuilder("{");
+		sb.append("\"title\":\"").append(report.getTitle()).append("\",");
 		int validChartCount = 0;
 		sb.append("\"charts\":[");
 		for (Chart chart : report.getCharts()) {
