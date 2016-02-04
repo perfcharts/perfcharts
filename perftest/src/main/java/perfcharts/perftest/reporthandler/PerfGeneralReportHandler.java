@@ -1,6 +1,5 @@
 package perfcharts.perftest.reporthandler;
 
-import org.apache.commons.cli.Options;
 import perfcharts.config.ReportConfig;
 import perfcharts.configtemplate.*;
 
@@ -11,11 +10,11 @@ import java.util.logging.Logger;
 /**
  * Created by vfreex on 1/19/16.
  */
-public class PerfBaselineReportHandler extends PerfReportHandler {
-    private final static Logger LOGGER = Logger.getLogger(PerfBaselineReportHandler.class.getName());
+public class PerfGeneralReportHandler extends PerfReportHandler {
+    private final static Logger LOGGER = Logger.getLogger(PerfGeneralReportHandler.class.getName());
     private final static String reportTemplateHTML = "res/report_templates/perf-baseline/html/report-mono.template.html";
 
-    public PerfBaselineReportHandler() {
+    public PerfGeneralReportHandler() {
     }
 
     @Override

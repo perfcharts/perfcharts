@@ -49,7 +49,7 @@ public class ReportGenerator {
         in.close();
 
         // create chartconfigs
-        List<ChartConfig<Chart>> chartConfigs = new ArrayList<ChartConfig<Chart>>();
+        final List<ChartConfig<Chart>> chartConfigs = new ArrayList<ChartConfig<Chart>>();
 
         for (ChartConfigTemplate template : reportConfig.getConfigTemplates()) {
             @SuppressWarnings("unchecked")

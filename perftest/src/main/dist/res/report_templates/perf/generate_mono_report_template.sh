@@ -2,7 +2,7 @@
 # generate a mono report template
 
 cd "$(dirname -- "$(readlink -e -- "$0")")"
-basepath='../src/main/dist/res'
+basepath='.'
 
 included_scripts=('lib/jquery-2.1.3.min.js' 'lib/jquery.tablesorter.min.js' 'lib/jquery.stickytableheaders.min.js' 'lib/flot/jquery.flot.min.js lib/flot/jquery.flot.time.min.js' 'lib/flot/jquery.flot.categories.min.js' 'lib/flot/jquery.flot.selection.min.js' 'lib/flot/jquery.flot.crosshair.min.js' 'lib/flot/jquery.flot.axislabels.min.js')
 included_stylesheets=('css/tablesorter/theme.default.css' 'css/default-style.css')
