@@ -22,6 +22,7 @@ clean:
 src:
 	rm -rf $(DIST_DIR)/$(SRC_DEST_DIR)
 	mkdir -p $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -prf common $(DIST_DIR)/$(SRC_DEST_DIR)
 	cp -prf generator $(DIST_DIR)/$(SRC_DEST_DIR)
 	cp -prf perftest $(DIST_DIR)/$(SRC_DEST_DIR)
 	cp -prf perftest-parser $(DIST_DIR)/$(SRC_DEST_DIR)
