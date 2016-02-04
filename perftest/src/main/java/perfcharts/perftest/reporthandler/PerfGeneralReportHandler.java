@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  */
 public class PerfGeneralReportHandler extends PerfReportHandler {
     private final static Logger LOGGER = Logger.getLogger(PerfGeneralReportHandler.class.getName());
-    private final static String reportTemplateHTML = "res/report_templates/perf-baseline/html/report-mono.template.html";
+    private final static String reportTemplateHTML = "res/report_templates/perf/report-mono.template.html";
 
     public PerfGeneralReportHandler() {
     }
@@ -23,10 +23,15 @@ public class PerfGeneralReportHandler extends PerfReportHandler {
         config.setTitle("Performance");
         //config.setBasePath();
         List<ChartConfigTemplate> configTemplates = new ArrayList<>();
-        configTemplates.add(new JmeterSimpleSummaryTableTemplate());
+        configTemplates.add(new JmeterSummaryChartTemplate());
+        configTemplates.add(new JmeterThreadChartTemplate());
         configTemplates.add(new TopTxWithHighestAvgRTBarChartTemplate());
+        configTemplates.add(new TopTxWithMostHitsBarChartTemplate());
         configTemplates.add(new JmeterAverageRTChartTemplate());
         configTemplates.add(new JmeterRTChartTemplate());
+        configTemplates.add(new JmeterTotalTPSChartTemplate());
+        configTemplates.add(new JmeterTPSChartTemplate());
+        configTemplates.add(new JmeterHitsChartTemplate());
         config.setConfigTemplates(configTemplates);
         //config.setLabelField(new IndexFieldSelector<>(0));
         return config;

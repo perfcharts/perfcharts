@@ -2,6 +2,7 @@ package perfcharts;
 
 import perfcharts.handler.ReportTypeHandler;
 import perfcharts.perftest.reporthandler.PerfBaselineReportHandler;
+import perfcharts.perftest.reporthandler.PerfGeneralReportHandler;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class NewGeneratorLauncher {
 
     static {
         reportTypeHandlers.put("perf-baseline", new PerfBaselineReportHandler());
+        reportTypeHandlers.put("perf", new PerfGeneralReportHandler());
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
