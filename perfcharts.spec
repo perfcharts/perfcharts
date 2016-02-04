@@ -35,6 +35,7 @@ cp -pr build/dist/res/* %{buildroot}%{_datadir}/%{name}/res
 mkdir -p %{buildroot}%{_datadir}/%{name}/lib
 cp -p build/dist/lib/* %{buildroot}%{_datadir}/%{name}/lib
 mkdir -p %{buildroot}%{_bindir}
+%{__ln_s} -f %{_datadir}/%{name}/bin/perfcharts %{buildroot}%{_bindir}/perfcharts
 %{__ln_s} -f %{_datadir}/%{name}/bin/cgt-perf %{buildroot}%{_bindir}/cgt-perf
 %{__ln_s} -f %{_datadir}/%{name}/bin/cgt-perf2 %{buildroot}%{_bindir}/cgt-perf2
 %{__ln_s} -f %{_datadir}/%{name}/bin/cgt-cmp %{buildroot}%{_bindir}/cgt-cmp

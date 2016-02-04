@@ -1,0 +1,8 @@
+#!/bin/bash
+SELF=`readlink -e -- "$0"`
+DIR=`dirname -- "$SELF"`
+export PERFCHARTS_HOME=`cd "$DIR"; cd ..; pwd`
+export CGT_HOME=$PERFCHARTS_HOME
+#echo $PERFCHARTS_HOME
+export PERFCHARTS_JAVA_CMD='java'
+$PERFCHARTS_JAVA_CMD -cp "$PERFCHARTS_HOME"/lib/perfcharts-generator.jar perfcharts.NewGeneratorLauncher $@

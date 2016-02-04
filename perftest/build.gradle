@@ -50,23 +50,23 @@ task runBuildSh(type: Exec) {
 // assemble.dependsOn buildReportTemplate, buildMonoReportTemplate
 assemble.dependsOn runBuildSh
 
-apply plugin: 'distribution'
-
-distributions {
-    main {
-        contents {
-            from("$buildDir/dynamicAssets"){
-                into('')
-            }
-            from("src/main/dist"){
-                into('')
-            }
-            from (configurations.runtime){
-                into('lib')
-            }
-            from (jar){
-                into('lib')
-            }
-        }
-    }
-}
+//apply plugin: 'distribution'
+//
+//distributions {
+//    main {
+//        contents {
+////            from("src/main/dist/bin"){
+////                into('bin')
+////            }
+//            from("src/main/dist/res"){
+//                into('res')
+//            }
+//            from (configurations.runtime){
+//                into('lib')
+//            }
+//            from (jar){
+//                into('lib')
+//            }
+//        }
+//    }
+//}

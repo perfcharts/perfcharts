@@ -24,11 +24,16 @@ public class NewGeneratorLauncher {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        if (args.length < 1) {
-            System.err.println("Usage: report_type [args...]");
+        if (args.length < 2) {
+            System.err.println("Usage: perfcharts gen report_type [args...]");
             return;
         }
-        String reportType = args[0];
+        String action = args[0];
+        if (!"gen".equals(action)) {
+            System.err.println("[ERROR] unknown action.");
+            return;
+        }
+        String reportType = args[1];
         ReportTypeHandler handler = reportTypeHandlers.getOrDefault(reportType, null);
         if (handler == null) {
             LOGGER.severe("report type '" + reportType + "' not found");
@@ -37,6 +42,7 @@ public class NewGeneratorLauncher {
         for (String arg : args) {
             argList.add(arg);
         }
+        argList.remove(0);
         argList.remove(0);
         handler.handle(argList);
     }

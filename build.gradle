@@ -12,18 +12,26 @@ task copyDeps(type: Copy, dependsOn: subprojects.jar) {
     into "$buildDir/dist/lib"
 }
 
-task copyStaticAssets(type: Copy) {
-    from 'perftest/src/main/dist'
-    into "$buildDir/dist"
+task copyStaticAssetsFromPerftest(type: Copy) {
+    from('perftest/src/main/dist')
+    into ("$buildDir/dist")
 }
 
-task copyDynamicAssets(type: Copy) {
-    dependsOn ':perftest:assemble'
-    from 'perftest/build/dynamicAssets'
-    into "$buildDir/dist"
+task copyStaticAssetsFromGenerator(type: Copy) {
+    from('generator/src/main/dist')
+    into ("$buildDir/dist")
 }
 
-task explodedDist(type: Copy, dependsOn: [copyJars, copyDeps, copyStaticAssets, copyDynamicAssets]) {
+task copyStaticAssets(type: Copy, dependsOn: [copyStaticAssetsFromPerftest, copyStaticAssetsFromGenerator]) {
+}
+
+//task copyDynamicAssets(type: Copy) {
+//    dependsOn ':perftest:assemble'
+//    from 'perftest/build/dynamicAssets'
+//    into "$buildDir/dist"
+//}
+
+task explodedDist(type: Copy, dependsOn: [copyJars, copyDeps, copyStaticAssets]) {
     from 'README.md'
     from 'LICENSE'
     into "$buildDir/dist"

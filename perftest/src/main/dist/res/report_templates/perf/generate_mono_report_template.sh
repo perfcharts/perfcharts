@@ -8,6 +8,8 @@ included_scripts=('lib/jquery-2.1.3.min.js' 'lib/jquery.tablesorter.min.js' 'lib
 included_stylesheets=('css/tablesorter/theme.default.css' 'css/default-style.css')
 included_htmls=('partial/body.html')
 
+YUICOMPRESSOR=../../../../../../tools/yuicompressor-2.4.8.jar
+
 # HTML Declaration and Headers
 echo '<!DOCTYPE html>'
 echo '<html lang="en-US">'
@@ -23,7 +25,7 @@ for js in ${included_scripts[@]}; do
 done
 
 echo '<script type="text/javascript">'
-java -jar ./yuicompressor-2.4.8.jar "$basepath"/js/perfcharts.js
+java -jar "$YUICOMPRESSOR" "$basepath"/js/perfcharts.js
 echo '</script>'
 
 # included css files
