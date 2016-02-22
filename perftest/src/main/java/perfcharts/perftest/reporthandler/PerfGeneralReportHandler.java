@@ -18,7 +18,7 @@ public class PerfGeneralReportHandler extends PerfReportHandler {
     }
 
     @Override
-    protected ReportConfig createPerformanceReportConfig() {
+    protected ReportConfig createPerformanceReportConfig(String optionalExclusionPattern) {
         ReportConfig config = new ReportConfig();
         config.setTitle("Performance");
         //config.setBasePath();
@@ -27,9 +27,9 @@ public class PerfGeneralReportHandler extends PerfReportHandler {
         configTemplates.add(new JmeterThreadChartTemplate());
         configTemplates.add(new TopTxWithHighestAvgRTBarChartTemplate());
         configTemplates.add(new TopTxWithMostHitsBarChartTemplate());
-        configTemplates.add(new JmeterAverageRTChartTemplate());
+        configTemplates.add(new JmeterAverageRTChartTemplate().setExclusionPattern(optionalExclusionPattern));
         configTemplates.add(new JmeterRTChartTemplate());
-        configTemplates.add(new JmeterTotalTPSChartTemplate());
+        configTemplates.add(new JmeterTotalTPSChartTemplate().setExclusionPattern(optionalExclusionPattern));
         configTemplates.add(new JmeterTPSChartTemplate());
         configTemplates.add(new JmeterHitsChartTemplate());
         config.setConfigTemplates(configTemplates);

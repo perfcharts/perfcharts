@@ -22,7 +22,7 @@ dependencies {
 jar.doFirst {
     baseName = 'perfcharts-generator'
     manifest {
-        attributes 'Main-Class': 'GeneratorLauncher',
+        attributes 'Main-Class': 'perfcharts.GeneratorLauncher',
                 'Class-Path': configurations.runtime.collect { it.getName() }.join(' ')
     }
 }

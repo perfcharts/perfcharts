@@ -19,14 +19,14 @@ public class PerfBaselineReportHandler extends PerfReportHandler {
     }
 
     @Override
-    protected ReportConfig createPerformanceReportConfig() {
+    protected ReportConfig createPerformanceReportConfig(String optionalExclusionPattern) {
         ReportConfig config = new ReportConfig();
         config.setTitle("Performance");
         //config.setBasePath();
         List<ChartConfigTemplate> configTemplates = new ArrayList<>();
         configTemplates.add(new JmeterSimpleSummaryTableTemplate());
         configTemplates.add(new TopTxWithHighestAvgRTBarChartTemplate());
-        configTemplates.add(new JmeterAverageRTChartTemplate());
+        configTemplates.add(new JmeterAverageRTChartTemplate().setExclusionPattern(optionalExclusionPattern));
         configTemplates.add(new JmeterRTChartTemplate());
         config.setConfigTemplates(configTemplates);
         //config.setLabelField(new IndexFieldSelector<>(0));

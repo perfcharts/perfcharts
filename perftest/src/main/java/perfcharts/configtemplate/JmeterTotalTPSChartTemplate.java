@@ -50,8 +50,9 @@ public class JmeterTotalTPSChartTemplate extends
 		return exclusionPattern;
 	}
 
-	public void setExclusionPattern(String exclusionPattern) {
+	public JmeterTotalTPSChartTemplate setExclusionPattern(String exclusionPattern) {
 		this.exclusionPattern = exclusionPattern;
+		return this;
 	}
 
 }

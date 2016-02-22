@@ -39,7 +39,8 @@ public class JmeterAverageRTChartTemplate extends
 		return exclusionPattern;
 	}
 
-	public void setExclusionPattern(String exclusionPattern) {
+	public JmeterAverageRTChartTemplate setExclusionPattern(String exclusionPattern) {
 		this.exclusionPattern = exclusionPattern;
+		return this;
 	}
 }

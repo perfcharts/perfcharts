@@ -24,14 +24,18 @@ import java.util.regex.Pattern;
  */
 public abstract class PerfReportHandler implements ReportTypeHandler {
     private final static Logger LOGGER = Logger.getLogger(PerfBaselineReportHandler.class.getName());
-    private final static Options options;
+    protected final static Options options;
 
     static {
         options = new Options();
-        options.addOption("h", false, "show help message.");
+        options.addOption("h", "help", false, "show help message");
+        options.addOption("d", "output-dir", true, "write generated files into DIRECTORY");
+        options.addOption("o", "output-file", true, "relocate generated report to FILE");
+        options.addOption("e", "exclude", true, "specify the pattern for average TPS & RT calculation exclusion, like 'ping\\.html'");
+        options.addOption("z", "time-zone", true, "fallback TIME_ZONE, like 'GMT+8'");
     }
 
-    protected abstract ReportConfig createPerformanceReportConfig();
+    protected abstract ReportConfig createPerformanceReportConfig(String optionalExclusionPattern);
 
     protected abstract ReportConfig createResourceMonitoringReportConfig(String title);
 
@@ -53,8 +57,13 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
             //System.out.println(cmd.getArgs()[0]);
             return;
         }
-        System.out.println("data processing...");
 
+        if (cmd.hasOption("z")) {
+            TimeZone tz = TimeZone.getTimeZone(cmd.getOptionValue("z"));
+            TimeZone.setDefault(tz);
+        }
+
+        LOGGER.info("Use fallback time zone '" + TimeZone.getDefault().toZoneId() + "'.");
 
         // paths
         final String DEFAULT_OUTPUT_DIR = "output";
@@ -64,8 +73,11 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
 
         String input = cmd.getArgs().length > 0 ? cmd.getArgs()[0] : ".";
         File inputDir = new File(input);
+
+        LOGGER.info("Processing files located in '" + inputDir.getAbsolutePath() + "'...");
+
         DataParserFactory dataParserFactory = new DataParserFactoryImpl();
-        String outputDirPath = input + File.separator + DEFAULT_OUTPUT_DIR;
+        String outputDirPath = cmd.getOptionValue("d", input + File.separator + DEFAULT_OUTPUT_DIR);
         File outputDir = new File(outputDirPath);
         outputDir.mkdirs();
 
@@ -140,7 +152,8 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
         List<String> parsedJtlFiles = parsedFileMap.get("jtl");
         if (parsedJtlFiles != null && !parsedJtlFiles.isEmpty()) {
             InputStream parsedFileIn = new FileInputStream(parsedJtlFiles.get(0));
-            ReportConfig perfReportConfig = createPerformanceReportConfig();
+            String optionalExclusionPattern = cmd.getOptionValue("e", null);
+            ReportConfig perfReportConfig = createPerformanceReportConfig(optionalExclusionPattern);
             ReportGenerator generator = new ReportGenerator(perfReportConfig);
             Report report = generator.generate(parsedFileIn);
 
@@ -182,7 +195,7 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
         dataJsWriter.flush();
 
         // generate mono-report file
-        File monoReportFile = new File(outputDir, "mono-report.html");
+        File monoReportFile = new File(cmd.getOptionValue("o", outputDir.getAbsolutePath() + File.separator + "mono-report.html"));
         FileUtils.copyFile(new File(PerfchartsContext.getInstance().getApplicationPath() + File.separator + getReportTemplateFilePath()), monoReportFile);
         OutputStream monoReportFileOut = new FileOutputStream(monoReportFile, true);
         BufferedWriter monoReportWriter = new BufferedWriter(new OutputStreamWriter(monoReportFileOut));

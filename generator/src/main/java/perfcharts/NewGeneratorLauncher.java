@@ -20,7 +20,7 @@ public class NewGeneratorLauncher {
 
     static {
         reportTypeHandlers.put("perf-baseline", new PerfBaselineReportHandler());
-        reportTypeHandlers.put("perf", new PerfGeneralReportHandler());
+        reportTypeHandlers.put("perf-general", new PerfGeneralReportHandler());
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

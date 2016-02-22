@@ -1,8 +1,10 @@
-package perfcharts.generator;
+package perfcharts;
 
 import perfcharts.chart.Report;
 import perfcharts.config.ReportConfig;
 import perfcharts.config.ReportConfigLoader;
+import perfcharts.generator.ReportGenerator;
+import perfcharts.generator.ReportWritter;
 
 import java.io.*;
 
