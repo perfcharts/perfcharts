@@ -2,24 +2,24 @@ subprojects {
     apply plugin: 'java'
 }
 
-task copyJars(type: Copy, dependsOn: subprojects.jar) {
+task copyJars(type: Copy, dependsOn: subprojects.build) {
     from subprojects.jar
     into "$buildDir/dist/lib"
 }
 
-task copyDeps(type: Copy, dependsOn: subprojects.jar) {
+task copyDeps(type: Copy, dependsOn: subprojects.build) {
     from subprojects.configurations.runtime
     into "$buildDir/dist/lib"
 }
 
 task copyStaticAssetsFromPerftest(type: Copy) {
     from('perftest/src/main/dist')
-    into ("$buildDir/dist")
+    into("$buildDir/dist")
 }
 
 task copyStaticAssetsFromGenerator(type: Copy) {
     from('generator/src/main/dist')
-    into ("$buildDir/dist")
+    into("$buildDir/dist")
 }
 
 task copyStaticAssets(type: Copy, dependsOn: [copyStaticAssetsFromPerftest, copyStaticAssetsFromGenerator]) {
@@ -31,7 +31,7 @@ task copyStaticAssets(type: Copy, dependsOn: [copyStaticAssetsFromPerftest, copy
 //    into "$buildDir/dist"
 //}
 
-task explodedDist(type: Copy, dependsOn: [copyJars, copyDeps, copyStaticAssets]) {
+task build(type: Copy, dependsOn: [copyJars, copyDeps, copyStaticAssets]) {
     from 'README.md'
     from 'LICENSE'
     into "$buildDir/dist"

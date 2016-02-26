@@ -10,7 +10,7 @@ TARBALL_DEST_NAME=$(SRC_DEST_DIR).tar.gz
 .PHONY: help build clean rpm srpm src tarball
 
 build:
-	gradle explodedDist
+	gradle build
 
 help:
 	@echo 'make [ build | clean | rpm | srpm | src | tarball ]'

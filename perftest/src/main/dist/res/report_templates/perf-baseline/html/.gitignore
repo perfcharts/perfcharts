@@ -1,3 +1,4 @@
 data.js
 data-*.js
-report.*.html
+report.template.html
+report-mono.template.html
