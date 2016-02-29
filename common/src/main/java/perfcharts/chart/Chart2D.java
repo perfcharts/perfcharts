@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import perfcharts.config.AxisMode;
 import perfcharts.formatter.Chart2DFormatter;
 import perfcharts.tick.Ticks;
@@ -157,7 +158,7 @@ public class Chart2D extends Chart {
 	 * @throws Exception
 	 */
 	@Override
-	public String format() throws IOException, InterruptedException {
+	public JSONObject format() throws IOException, InterruptedException {
 		return formatter.format(this);
 	}
 	

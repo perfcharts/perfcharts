@@ -17,14 +17,13 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by vfreex on 2/4/16.
  */
 public abstract class PerfReportHandler implements ReportTypeHandler {
-    private final static Logger LOGGER = Logger.getLogger(PerfBaselineReportHandler.class.getName());
     protected final static Options options;
+    private final static Logger LOGGER = Logger.getLogger(PerfBaselineReportHandler.class.getName());
 
     static {
         options = new Options();
@@ -34,12 +33,6 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
         options.addOption("e", "exclude", true, "specify the pattern for average TPS & RT calculation exclusion, like 'ping\\.html'");
         options.addOption("z", "time-zone", true, "fallback TIME_ZONE, like 'GMT+8'");
     }
-
-    protected abstract ReportConfig createPerformanceReportConfig(String optionalExclusionPattern);
-
-    protected abstract ReportConfig createResourceMonitoringReportConfig(String title);
-
-    protected abstract String getReportTemplateFilePath();
 
     @Override
     public void handle(List<String> argList) throws IOException, InterruptedException {
@@ -91,49 +84,54 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
         parsedDir.mkdirs();
 
         // parse raw input files
-        Map<String, List<String>> parsedFileMap = new HashMap<>();
-        final String FILENAME_PATTERN = "^([^_]+)(_.*)*\\.\\w+$";
-        Pattern monitoringFileNamePattern = Pattern.compile(FILENAME_PATTERN);
+        Map<String, Set<String>> parsedFileMap = new HashMap<>();
+        //final String FILENAME_PATTERN = "^([^_]+)(_.*)*\\.\\w+$";
+        //Pattern monitoringFileNamePattern = Pattern.compile(FILENAME_PATTERN);
         for (String fileName :
                 inputDir.list()) {
             File file = new File(inputDir, fileName);
             if (!file.exists() || file.isDirectory())
                 continue;
             String ext = "";
-            int dotPos = fileName.indexOf('.');
-            if (dotPos >= 0)
-                ext = fileName.substring(dotPos + 1);
-            else
+            int dotPosition = fileName.indexOf('.');
+            if (dotPosition < 0)
                 continue;
+            ext = fileName.substring(dotPosition + 1);
+            if (ext == null || ext.isEmpty())
+                continue;
+            PerfReportHandlerRule rule = getReportHandlerRules().get(ext);
+            if (rule == null) {
+                LOGGER.warning("No rules for file '" + fileName + ".");
+                continue;
+            }
+            Matcher matcher = rule.getInputFileNamePattern().matcher(fileName);
+            if (!matcher.matches()) {
+                LOGGER.warning("File '" + fileName + " has an invalid name format.");
+                continue;
+            }
+            String subreportName = matcher.replaceAll(rule.getOutputReportNamePattern());
+
             DataParser dataParser = null;
             try {
                 dataParser = dataParserFactory.createParser(ext);
             } catch (Exception e) {
-                LOGGER.warning("file '" + fileName + " is ignored.");
+                LOGGER.warning("No parser found for '" + fileName + ".");
                 continue;
             }
+
             InputStream fileIn = new BufferedInputStream(new FileInputStream(file));
-
-            String category = null;
-            if ("jtl".equalsIgnoreCase(ext)) {
-                // parse all .jtl files to a single file
-                fileName = "performance";
-                category = "jmeter";
-            } else if ("nmon".equalsIgnoreCase(ext) || "load".equalsIgnoreCase(ext)) {
-                Matcher m = monitoringFileNamePattern.matcher(file.getName());
-                if (m.matches())
-                    fileName = m.group(1);
-                category = "nmon";
+            File subreportOutputDir = new File(parsedDir, rule.getCategory());
+            subreportOutputDir.mkdirs();
+            File parsedFile = new File(subreportOutputDir, subreportName);
+            if (rule.getDuplicatedFileAction() == PerfReportHandlerRule.DuplicatedAction.IGNORE && parsedFile.exists()) {
+                LOGGER.warning("Ignore duplicated for '" + fileName + ".");
+                continue;
             }
-
-            File dir = new File(parsedDir, category);
-            dir.mkdirs();
-            File parsedFile = new File(dir, fileName);
-            OutputStream parsedFileOut = new FileOutputStream(parsedFile, true);
+            OutputStream parsedFileOut = new FileOutputStream(parsedFile, rule.getDuplicatedFileAction() == PerfReportHandlerRule.DuplicatedAction.APPEND);
             dataParser.parse(fileIn, parsedFileOut);
-            List<String> parsedFiles = parsedFileMap.get(ext);
+            Set<String> parsedFiles = parsedFileMap.get(rule.getCategory());
             if (parsedFiles == null) {
-                parsedFileMap.put(ext, parsedFiles = new LinkedList<>());
+                parsedFileMap.put(rule.getCategory(), parsedFiles = new TreeSet<String>());
             }
             parsedFiles.add(parsedFile.getAbsolutePath());
         }
@@ -149,28 +147,22 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
         List<File> subreportJsonFiles = new ArrayList<>();
 
         // generate performance report
-        List<String> parsedJtlFiles = parsedFileMap.get("jtl");
-        if (parsedJtlFiles != null && !parsedJtlFiles.isEmpty()) {
-            InputStream parsedFileIn = new FileInputStream(parsedJtlFiles.get(0));
-            String optionalExclusionPattern = cmd.getOptionValue("e", null);
-            ReportConfig perfReportConfig = createPerformanceReportConfig(optionalExclusionPattern);
-            ReportGenerator generator = new ReportGenerator(perfReportConfig);
-            Report report = generator.generate(parsedFileIn);
-
-            // write to output stream
-            File performanceSubreportFile = new File(subreportsDir, "Performance.json");
-            ReportWritter reportWritter = new ReportWritter();
-            reportWritter.write(report, new FileOutputStream(performanceSubreportFile));
-            subreportJsonFiles.add(performanceSubreportFile);
-        }
-
-        List<String> parsedNMONFiles = parsedFileMap.get("nmon");
-        if (parsedNMONFiles != null && !parsedNMONFiles.isEmpty()) {
-            for (String parsedNMONFilePath : parsedNMONFiles) {
-                File parsedFile = new File(parsedNMONFilePath);
+        for (String category : parsedFileMap.keySet()) {
+            Set<String> parsedFiles = parsedFileMap.get(category);
+            if (parsedFiles == null || parsedFiles.isEmpty())
+                continue;
+            for (String parsedFilePath : parsedFiles) {
+                File parsedFile = new File(parsedFilePath);
+                if (!parsedFile.exists()) {
+                    LOGGER.warning("Parsed file '" + parsedFile.getAbsolutePath() + "' does not exist.");
+                    continue;
+                }
+                ReportConfig reportConfig = createReportConfigs(category, parsedFile.getName(), null, cmd);
+                if (reportConfig == null) {
+                    LOGGER.warning("No report configs found for parsed file category '" + category + "'.");
+                    continue;
+                }
                 InputStream parsedFileIn = new FileInputStream(parsedFile);
-
-                ReportConfig reportConfig = createResourceMonitoringReportConfig(parsedFile.getName());
                 ReportGenerator generator = new ReportGenerator(reportConfig);
                 Report report = generator.generate(parsedFileIn);
                 // write to output stream
@@ -196,7 +188,7 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
 
         // generate mono-report file
         File monoReportFile = new File(cmd.getOptionValue("o", outputDir.getAbsolutePath() + File.separator + "mono-report.html"));
-        FileUtils.copyFile(new File(PerfchartsContext.getInstance().getApplicationPath() + File.separator + getReportTemplateFilePath()), monoReportFile);
+        FileUtils.copyFile(new File(PerfchartsContext.getInstance().getApplicationPath() + File.separator + getReportTemplateHTMLFileName()), monoReportFile);
         OutputStream monoReportFileOut = new FileOutputStream(monoReportFile, true);
         BufferedWriter monoReportWriter = new BufferedWriter(new OutputStreamWriter(monoReportFileOut));
         monoReportWriter.write("<script type='text/javascript'>\n");
@@ -204,4 +196,18 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
         monoReportWriter.write("\n</script>\n");
         monoReportWriter.flush();
     }
+
+    /**
+     * file extension -> rule
+     */
+    protected abstract Map<String, PerfReportHandlerRule> getReportHandlerRules();
+
+    protected abstract String getReportTemplateHTMLFileName();
+
+    /**
+     * parsed file category -> ReportConfigs
+     *
+     * @return
+     */
+    protected abstract ReportConfig createReportConfigs(String category, String reportTitle, String reportSubtitle, CommandLine cmd);
 }

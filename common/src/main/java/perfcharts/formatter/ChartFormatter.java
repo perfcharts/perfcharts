@@ -1,5 +1,6 @@
 package perfcharts.formatter;
 
+import org.json.JSONObject;
 import perfcharts.chart.Chart;
 
 import java.io.IOException;
@@ -18,5 +19,5 @@ public interface ChartFormatter<T extends Chart> {
 	 * @return formatted string
 	 * @throws Exception
 	 */
-	public String format(T chart) throws IOException, InterruptedException;
+	public JSONObject format(T chart) throws IOException, InterruptedException;
 }

@@ -1,5 +1,7 @@
 package perfcharts.chart;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 /**
@@ -49,7 +51,7 @@ public abstract class Chart {
 	 * @return a string
 	 * @throws Exception
 	 */
-	public abstract String format() throws IOException, InterruptedException;
+	public abstract JSONObject format() throws IOException, InterruptedException;
 
 	/**
 	 * get the subtitle of configured chart

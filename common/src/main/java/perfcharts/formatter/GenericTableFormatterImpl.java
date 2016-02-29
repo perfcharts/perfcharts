@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GenericTableFormatterImpl implements GenericTableFormatter {
 
     @Override
-    public String format(GenericTable chart) throws IOException, InterruptedException {
+    public JSONObject format(GenericTable chart) throws IOException, InterruptedException {
         JSONObject chartJSON = new JSONObject();
         chartJSON.put("chartType", "TABLE");
         chartJSON.put("title", chart.getTitle());
@@ -52,7 +52,7 @@ public class GenericTableFormatterImpl implements GenericTableFormatter {
             }
             chartJSON.put("sortList", sortList);
         }
-        return chartJSON.toString();
+        return chartJSON;
     }
 
     private static JSONArray parseTableRow(TableCell[] tr) {

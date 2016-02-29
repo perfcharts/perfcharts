@@ -1,5 +1,6 @@
 package perfcharts.chart;
 
+import org.json.JSONObject;
 import perfcharts.formatter.ChartFormatter;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class GenericTable extends Chart {
     }
 
     @Override
-    public String format() throws IOException, InterruptedException {
+    public JSONObject format() throws IOException, InterruptedException {
         return formatter.format(this);
     }
 

@@ -22,7 +22,7 @@ import perfcharts.config.AxisMode;
  *
  */
 public class FlotChartFormatter implements Chart2DFormatter {
-	public String format(Chart2D graph) throws IOException, InterruptedException {
+	public JSONObject format(Chart2D graph) throws IOException, InterruptedException {
 		JSONObject chartJson = new JSONObject();
 		chartJson.put("key", graph.getKey());
 		chartJson.put("title", graph.getTitle());
@@ -91,6 +91,6 @@ public class FlotChartFormatter implements Chart2DFormatter {
 				chartJson.put("stringMapSize", stringMapJson.length());
 			}
 		}
-		return chartJson.toString();
+		return chartJson;
 	}
 }

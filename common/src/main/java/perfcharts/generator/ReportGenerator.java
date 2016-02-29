@@ -87,7 +87,7 @@ public class ReportGenerator {
         for (int t = 0; t < workingThreads.length; t++) {
             workingThreads[t].join();
         }
-        return new Report(reportConfig.getTitle(), Arrays.asList(charts));
+        return new Report(reportConfig.getTitle(), reportConfig.getSubtitle(), reportConfig.getGroupName(), Arrays.asList(charts));
     }
 
     public ReportConfig getReportConfig() {
