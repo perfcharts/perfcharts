@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class PerfGeneralReportHandler extends PerfReportHandler {
     private final static Logger LOGGER = Logger.getLogger(PerfGeneralReportHandler.class.getName());
-    private final static String reportTemplateHTML = "res/report_templates/perf/report-mono.template.html";
+    private final static String reportTemplateHTML = "res/report_templates/perf-baseline/html/report-mono.template.html";
 
     private Map<String, PerfReportHandlerRule> reportHandlerRules = new HashMap<>();
 
