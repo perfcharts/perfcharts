@@ -20,6 +20,7 @@ public class DataParserFactoryImpl implements DataParserFactory {
         parserClasses.put("jtl", JmeterParser.class);
         parserClasses.put("nmon", NMONParser.class);
         parserClasses.put("load", CPULoadParser.class);
+        parserClasses.put("perfcmp", PerformanceComparisonParser.class);
     }
 
     private Map<String, DataParser> parsers = new HashMap<>();

@@ -2,6 +2,7 @@ package perfcharts;
 
 import perfcharts.handler.ReportTypeHandler;
 import perfcharts.perftest.reporthandler.PerfBaselineReportHandler;
+import perfcharts.perftest.reporthandler.PerfComparisonReportHandler;
 import perfcharts.perftest.reporthandler.PerfGeneralReportHandler;
 
 import java.io.IOException;
@@ -21,7 +22,9 @@ public class NewGeneratorLauncher {
     static {
         reportTypeHandlers.put("perf-baseline", new PerfBaselineReportHandler());
         reportTypeHandlers.put("perf-general", new PerfGeneralReportHandler());
+        reportTypeHandlers.put("perf-compare", new PerfComparisonReportHandler());
     }
+
 
     public static void main(String[] args) throws IOException, InterruptedException {
         if (args.length < 2) {

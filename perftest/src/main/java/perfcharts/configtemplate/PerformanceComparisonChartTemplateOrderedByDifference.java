@@ -109,6 +109,7 @@ public class PerformanceComparisonChartTemplateOrderedByDifference extends
 				return result;
 			}
 		});
+		cfg.setKey("perf-cmp-tx-diff");
 		return cfg;
 	}
 }

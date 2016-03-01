@@ -13,6 +13,7 @@ public class PerformanceSimpleComparisonTableTemplate extends ChartTemplateBase 
         PerformanceSimpleComparisonTableConfig config = new PerformanceSimpleComparisonTableConfig();
         config.setTitle("Performance Comparison");
         config.setSubtitle(getSubtitle());
+        config.setKey("perf-cmp-table");
         return config;
     }
 
