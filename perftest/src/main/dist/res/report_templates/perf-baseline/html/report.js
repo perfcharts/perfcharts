@@ -1,181 +1,183 @@
 
 (function($){ $(function() {
-var DEFAULT_ROUTE="!/report/performance-test";
-
 var AppRouter = Backbone.Router.extend({
     routes: {
         "":"index",
-        "!/report/performance-test": "switchToPerformance",
-        "!/report/performance-test/:id": "showPerformanceChart",
-        "!/report/system-resource/:host": "switchToHost",
-        "!/report/system-resource/:host/:id": "showSystemResourceChart",
-        "!/custom-chart": "switchToCustomChart",
+//        "!/report/performance-test": "switchToPerformance",
+//        "!/report/performance-test/:id": "showPerformanceChart",
+//        "!/report/system-resource/:host": "switchToHost",
+//        "!/report/system-resource/:host/:id": "showSystemResourceChart",
+          "!/custom-chart": "switchToCustomChart",
+          "!/report/:groupName/:reportID": "showReport",
+          "!/report/:groupName/:reportID/:chart": "showChart",
     }
 });
 // Instantiate the router
 var app_router = new AppRouter;
 
-app_router.on('route:index', function() {
-    location.hash = DEFAULT_ROUTE;
-});
-
-// initialize menu entries for monitoring reports
-var $monitoredHostMenu = $("#monitoredHostMenu");
-if (ChartGeneration.data.length <= 1) {
-    // no monitoring reports, hide this menu
-    $("#mainNav li:nth-child(2)").hide();
-}
-else {
-    for (var i = 1; i < ChartGeneration.data.length; ++i) {
-        var item = ChartGeneration.data[i];
-        var reportID = item.key ? item.key : i;
-        var $newMenuItem = $("<li/>").appendTo($monitoredHostMenu);
-        $("<a/>").attr("href","#!/report/system-resource/"+reportID)
-        .text(item.title).appendTo($newMenuItem);
-    }
-}
-
-function createTabHeadsForPerformanceReport(charts, $tab) {
-    $tab.html("");
-    for (var i = 0; i < charts.length; ++i) {
-        var item = charts[i];
-        var tab = $("<li/>").attr("role", "presentation").appendTo($tab);
-        if (i==0)
-            tab.addClass("active");
-        var chartID = item.key ? item.key : i;
-        var tabLink = $("<a/>")
-        .attr("role", "tab")
-        .attr("data-target", "chart-container")
-        .attr("data-chart-id", chartID)
-        .attr("href", "#!/report/performance-test/" + chartID)
-        .text(item.title)
-        .appendTo(tab);
-    }
-}
-
-function createTabHeadsForMonitoringReport(hostID, charts, $tab) {
-    $tab.html("");
-    for (var i = 0; i < charts.length; ++i) {
-        var item = charts[i];
-        var tab = $("<li/>").attr("role", "presentation").appendTo($tab);
-        if (i==0)
-            tab.addClass("active");
-        var chartID = item.key ? item.key : i;
-        var tabLink = $("<a/>")
-        .attr("role", "tab")
-        .attr("data-target", "chart-container")
-        .attr("data-chart-id", chartID)
-        .attr("href", "#!/report/system-resource/" + hostID + "/" + chartID)
-        .text(item.title)
-        .appendTo(tab);
-    }
-}
-
-// create report description
-var $description = $("<div/>").html(ChartGeneration.data.description).appendTo("#report-description");
-
+var $mainNav = $("#mainNav");
 var $chartTabs = $('#chartTabs');
-app_router.on('route:switchToPerformance', function( id ){
-    $("#my-navbar li").removeClass('active');
-    $("#mainNav>li:nth-child(1)").addClass('active');
-    // create chart tabs
-    var perfReport = ChartGeneration.data[0];
-    createTabHeadsForPerformanceReport(perfReport.charts, $chartTabs);
-    $chartTabs.data("my-current", 0);
-    var firstChart = perfReport.charts.length > 0 ? perfReport.charts[0] : null;
-    if (firstChart) {
-        var id = firstChart.key ? firstChart.key : 0;
-        location.hash += "/" + (id);
+var $chart_container = $("#chart-container");
+
+
+// reorganize loaded report
+Reports = {}; // to locate a report, use Reports[group][reportID], where "" donates default report group
+for (var i = 0; i < ChartGeneration.data.length; ++i) {
+    var originalReport = ChartGeneration.data[i];
+    var groupName = originalReport.groupName === undefined || originalReport.groupName == '' ? '' : originalReport.groupName;
+    var reportID = originalReport._reportID = originalReport.key ? originalReport.key : originalReport.title;
+    if (!Reports[groupName]) {
+        Reports[groupName] = {}; // create new report group
     }
+    var reportGroup = Reports[groupName];
+    reportGroup[reportID] = originalReport;
+}
+var groupNames = []; // sorted group names
+for (var groupName in Reports) {
+    groupNames.push(groupName);
+}
+groupNames = groupNames.sort();
+var groupIndices = {}; // groupName->index in groupNames map
+for (var i = 0; i < groupNames.length; ++i) {
+    var groupName = groupNames[i];
+    var group = Reports[groupName];
+    groupIndices[groupName] = i;
+    // create menu item on main nav bar
+    if (groupName === "") { //default group
+        for (var reportName in group) {
+            var report = group[reportName];
+            var $menuItem = $("<li/>").appendTo($mainNav);
+            var $linkToReport = $("<a/>").text(report.title).attr("href", "#!/report/_/" + encodeURIComponent(report._reportID)).appendTo($menuItem);
+        }
+    } else {
+        var $menuItem = $("<li/>").addClass("dropdown").appendTo($mainNav);
+        var $linkToReport = $("<a/>")
+            .text(groupName)
+            .attr("href", "#")
+            .addClass("dropdown-toggle")
+            .attr("data-toggle", "dropdown")
+            .attr("role", "button")
+            .attr("aria-haspopup", true)
+            .attr("aria-expanded", false)
+            .append($("<span/>").addClass("caret"))
+            .appendTo($menuItem);
+        var $submenu = $("<ul/>").addClass("dropdown-menu").appendTo($menuItem);
+        for (var reportName in group) {
+             var report = group[reportName];
+             var $menuItem = $("<li/>").appendTo($submenu);
+             var $linkToReport = $("<a/>").text(report.title).attr("href", "#!/report/" + encodeURIComponent(groupName) + "/" + encodeURIComponent(report._reportID)).appendTo($menuItem);
+        }
+    }
+}
+
+app_router.on('route:index', function() {
+    if (groupNames.length == 0)
+        return;
+    var groupName = groupNames[0];
+    var group = Reports[groupName];
+    if (!group)
+        return;
+    var reportID = null;
+    for (var key in group) {
+        if (group[key])
+            reportID = key;
+        break;
+    }
+    if (reportID)
+        location.hash = '!/report/' + encodeURIComponent(groupName === '' ? '_' : groupName) + '/' + encodeURIComponent(reportID);
 });
 
-var $chart_container = $("#chart-container");
-app_router.on('route:showPerformanceChart', function( id ){
-    var report = ChartGeneration.data[0];
-    //switch to corresponding tab
-    $("#my-navbar li").removeClass('active');
-    $("#mainNav>li:nth-child(1)").addClass('active');
 
-    if ($chartTabs.data("my-current") !== 0) {
-        createTabHeadsForPerformanceReport(report.charts, $chartTabs);
-        $chartTabs.data("my-current", 0);
-    }
+function showReport(groupName, reportID) {
+    if (groupName === '_')
+        groupName = '';
+    var group = Reports[groupName];
+//    if (groupName !== currentGroupName) {
+        $("#my-navbar li").removeClass('active');
+        if (!group) {
+            alert("invalid path parameter: unknown report group");
+            return false;
+        }
+        //alert(groupName + "/" +  reportID);
+        currentGroupName = groupName;
+        $("#mainNav>li:nth-child(" + (groupIndices[groupName] + 1) + ")").addClass('active');
+//    } else if (reportID === currentReportID) {
+//        return false;
+//    }
 
-    $("#chartTabs a[data-chart-id=\"" + id + "\"]").tab('show');
-    // discard old chart
-    $chart_container.html("");
-
-    //
-    var perfReport = {};
-    perfReport.charts = {};
-    for (var i = 0; i < report.charts.length; ++i) {
-        var item = report.charts[i];
-        perfReport.charts[i] = item;
-        if (item.key)
-            perfReport.charts[item.key] = item;
-    }
-
-    var chart = perfReport.charts[id];
-    if (!chart) {
+    var report = group[reportID];
+    if (!report) {
+        alert("invalid path parameter: unknown report ID");
         return;
     }
-    var painter = Perfcharts.Painter.create(chart);
-//    $("<div id='tooltip'></div>").css({
-//    			position : "absolute",
-//    			display : "none",
-//    			border : "1px solid #fdd",
-//    			padding : "2px",
-//    			"background-color" : "#fee",
-//    			opacity : 0.80
-//    		}).appendTo($chart_container);
-    painter.paint($chart_container, chart);
-});
+    currentReportID = reportID;
 
-app_router.on('route:switchToHost', function( host ){
-    $("#my-navbar li").removeClass('active');
-    $("#mainNav>li:nth-child(2)").addClass('active');
-    var report = ChartGeneration.data[host];
-    var perfReport = {};
-    perfReport.charts = {};
-    for (var i = 1; i < report.charts.length; ++i) {
-        var item = report.charts[i];
-        var chartID = item.key ? item.key : i;
-        perfReport.charts[chartID] = item;
+    if (!report.chartMap) {
+        report.chartMap = {}; // chartID -> chart map
+        for (var i = 0; i < report.charts.length; ++i) {
+            var item = report.charts[i];
+            item._chartID = item.key ? item.key : i;
+            report.chartMap[item._chartID] = item;
+        }
     }
     var $chartTabs = $('#chartTabs');
     // create chart tabs
-    createTabHeadsForMonitoringReport(host, report.charts, $chartTabs);
-    $chartTabs.data("my-current", host);
-    var firstChart = report.charts.length > 0 ? report.charts[0] : null;
-    if (firstChart) {
-            var id = firstChart.key ? firstChart.key : 0;
-            location.hash += "/" + (id);
-    }
+    createChartTabs(groupName, reportID, report.charts, $chartTabs);
+    $chartTabs.data("my-current", reportID);
+    return true;
+}
 
+app_router.on('route:showReport', function( groupName, reportID ){
+    if (!showReport(groupName, reportID))
+        return;
+    var report = Reports[groupName==='_'? '' : groupName][reportID]
+    var firstChart = report.charts.length > 0 ? report.charts[0] : null;
+    if (firstChart) // automatically show the first chart in this report
+        location.hash += "/" + encodeURIComponent(firstChart._chartID);
 });
 
-app_router.on('route:showSystemResourceChart', function( host, id ){
-    var report = ChartGeneration.data[host];
-    //switch to corresponding tab
-    $("#my-navbar li").removeClass('active');
-    $("#mainNav>li:nth-child(2)").addClass('active');
-    if ($chartTabs.data("my-current") !== host) {
-        createTabHeadsForMonitoringReport(host, report.charts, $chartTabs);
-        $chartTabs.data("my-current", host);
+
+function createChartTabs(groupName, reportID, charts, $tab) {
+    $tab.html("");
+    for (var i = 0; i < charts.length; ++i) {
+        var item = charts[i];
+        var tab = $("<li/>").attr("role", "presentation").appendTo($tab);
+        if (i==0)
+            tab.addClass("active");
+        var chartID = item._chartID;
+        var tabLink = $("<a/>")
+        .attr("role", "tab")
+        .attr("data-target", "chart-container")
+        .attr("data-chart-id", chartID)
+        .attr("href", "#!/report/" + encodeURIComponent(groupName === '' ? '_' : groupName)  + "/" + encodeURIComponent(reportID) + "/" + encodeURIComponent(chartID))
+        .text(item.title)
+        .appendTo(tab);
     }
-    $("#chartTabs a[data-chart-id=\"" + id + "\"]").tab('show');
+}
+
+app_router.on('route:showChart', function( groupName, reportID, chartID ){
+    if (groupName === '_')
+        groupName = '';
+    var group = Reports[groupName];
+    if (!group) {
+        alert("invalid path parameter: unknown report group");
+        return;
+    }
+    var report = group[reportID];
+    if (!report) {
+        alert("invalid path parameter: unknown report ID");
+        return;
+    }
+    //switch to corresponding tab
+    //$("#my-navbar li").removeClass('active');
+    //$("#mainNav>li:nth-child(2)").addClass('active');
+    if ($chartTabs.data("my-current") !== reportID) {
+         showReport(groupName, reportID);
+    }
+    $("#chartTabs a[data-chart-id=\"" + chartID + "\"]").tab('show');
     // clear old chart
     $("#chart-container").html("");
-    var perfReport = {};
-    perfReport.charts = {};
-    for (var i = 0; i < ChartGeneration.data[host].charts.length; ++i) {
-        var item = ChartGeneration.data[host].charts[i];
-        perfReport.charts[i] = item;
-        if (item.key)
-            perfReport.charts[item.key] = item;
-    }
-
-    var chart = perfReport.charts[id];
+    var chart = report.chartMap[chartID];
     if (!chart) {
         return;
     }
@@ -205,9 +207,5 @@ opacity : 0.80
 }).appendTo("body");
 
 Backbone.history.start();
-
-//$('#chartTabs a').click(function (e) {
-//  $(this).tab("show");
-//})
 });
 })(jQuery);
