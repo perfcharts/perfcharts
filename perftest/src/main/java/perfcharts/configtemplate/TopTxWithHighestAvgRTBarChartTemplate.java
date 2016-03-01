@@ -67,6 +67,7 @@ public class TopTxWithHighestAvgRTBarChartTemplate extends Chart2DTemplateBase {
 			}
 		});
 		cfg.setInterval(1); // disable auto interval
+		cfg.setKey("top-slow-tx");
 		return cfg;
 	}
 }

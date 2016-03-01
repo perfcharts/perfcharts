@@ -55,6 +55,7 @@ public class TopTxWithMostHitsBarChartTemplate extends Chart2DTemplateBase {
 			}
 		});
 		cfg.setInterval(1); // disable auto interval
+		cfg.setKey("top-hit-tx");
 		return cfg;
 	}
 }

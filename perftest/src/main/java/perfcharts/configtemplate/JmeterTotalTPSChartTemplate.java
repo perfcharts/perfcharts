@@ -43,6 +43,7 @@ public class JmeterTotalTPSChartTemplate extends
 		Chart2DConfig cfg = createConfig("Total TPS over Time", "Time", "TPS", rules,
 				AxisMode.TIME);
 		cfg.setInterval(interval);
+		cfg.setKey("total-tps");
 		return cfg;
 	}
 

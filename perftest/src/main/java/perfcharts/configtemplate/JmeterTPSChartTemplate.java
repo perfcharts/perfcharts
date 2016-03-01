@@ -31,6 +31,7 @@ public class JmeterTPSChartTemplate extends Chart2DTemplateWithIntervalBase {
 		Chart2DConfig cfg =  createConfig("TPS over Time", "Time", "TPS", rules, AxisMode.TIME);
 		cfg.setSeriesOrder(SeriesOrder.SERIES_LABEL);
 		cfg.setInterval(interval);
+		cfg.setKey("tps-per-tx");
 		return cfg;
 	}
 

@@ -31,8 +31,10 @@ public class JmeterAverageRTChartTemplate extends
 			rule.setExclusionRule(new Chart2DSeriesExclusionRule("$1",
 					exclusionPattern));
 		rules.add(rule);
-		return createConfig("Average Response Time over Time", "Time",
+		Chart2DConfig config = createConfig("Average Response Time over Time", "Time",
 				"Response Time", rules, AxisMode.TIME);
+		config.setKey("weighted-avg-rt");
+		return config;
 	}
 
 	public String getExclusionPattern() {

@@ -1,14 +1,14 @@
 package perfcharts.configtemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import perfcharts.calc.AverageCalculation;
 import perfcharts.common.FieldSelector;
 import perfcharts.common.IndexFieldSelector;
 import perfcharts.config.AxisMode;
 import perfcharts.config.Chart2DConfig;
 import perfcharts.config.Chart2DSeriesConfigRule;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CPULoadChartTemplate extends Chart2DTemplateWithIntervalBase {
 	@Override
@@ -38,8 +38,10 @@ public class CPULoadChartTemplate extends Chart2DTemplateWithIntervalBase {
 				timestampField, coresField, new AverageCalculation(interval)));
 		rules.add(new Chart2DSeriesConfigRule("^CPUNUM$", "CPUs", "", labelField,
 				timestampField, singleValueField, new AverageCalculation(interval)));
-		return createConfig("CPU Load over Time", "Time", "CPU load", rules,
+		Chart2DConfig cfg = createConfig("CPU Load over Time", "Time", "CPU load", rules,
 				AxisMode.TIME);
+		cfg.setKey("cpu-load");
+		return cfg;
 	}
 
 }

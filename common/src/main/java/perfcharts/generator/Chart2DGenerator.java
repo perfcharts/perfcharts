@@ -193,6 +193,7 @@ public class Chart2DGenerator implements ChartGenerator {
 			graph.setBarChartStringIDMap(stringIDMapper.map(graph,
 					chart2dConfig));
 		}
+		graph.setKey(chart2dConfig.getKey());
 		return graph;
 	}
 

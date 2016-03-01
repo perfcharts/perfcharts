@@ -24,7 +24,9 @@ public class NMONDiskBusyChartTemplate extends Chart2DTemplateWithIntervalBase {
 //		rules.add(new Chart2DSeriesConfigRule("^DISKBUSY-(.+)$", "Disk-Total", "%", labelField,
 //				timestampField, diskBusyField, new SumByLabelCalculation(labelField,
 //						interval)));
-		return createConfig("Disk Busy% Over Time", "Time", "Disk Busy", rules, AxisMode.TIME);
+		Chart2DConfig cfg = createConfig("Disk Busy% Over Time", "Time", "Disk Busy", rules, AxisMode.TIME);
+		cfg.setKey("nmon-disk-busy");
+		return cfg;
 	}
 
 }

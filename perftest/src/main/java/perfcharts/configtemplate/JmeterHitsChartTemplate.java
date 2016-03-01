@@ -28,6 +28,7 @@ public class JmeterHitsChartTemplate extends Chart2DTemplateWithIntervalBase {
 		Chart2DConfig cfg = createConfig("Hits over Time", "Time",
 				"Hits", rules, AxisMode.TIME);
 		cfg.setInterval(interval);
+		cfg.setKey("total-hits");
 		return cfg;
 	}
 

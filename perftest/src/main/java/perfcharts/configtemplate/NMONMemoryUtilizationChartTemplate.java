@@ -1,14 +1,14 @@
 package perfcharts.configtemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import perfcharts.calc.AverageCalculation;
 import perfcharts.common.FieldSelector;
 import perfcharts.common.IndexFieldSelector;
 import perfcharts.config.AxisMode;
 import perfcharts.config.Chart2DConfig;
 import perfcharts.config.Chart2DSeriesConfigRule;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NMONMemoryUtilizationChartTemplate extends
 		Chart2DTemplateWithIntervalBase {
@@ -49,9 +49,11 @@ public class NMONMemoryUtilizationChartTemplate extends
 		rules.add(new Chart2DSeriesConfigRule("^MEM_AVAILABLE$", "Memory-Available", "MiB", labelField,
 				timestampField, singleValueField, new AverageCalculation(
 						interval)));
-		
-		return createConfig("Memory Utilization over Time", "Time",
+
+		Chart2DConfig cfg = createConfig("Memory Utilization over Time", "Time",
 				"Memory Utilization", rules, AxisMode.TIME);
+		cfg.setKey("nmon-nmon-util");
+		return cfg;
 	}
 
 }

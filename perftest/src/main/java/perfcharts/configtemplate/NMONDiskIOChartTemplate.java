@@ -31,7 +31,9 @@ public class NMONDiskIOChartTemplate extends Chart2DTemplateWithIntervalBase {
 //		rules.add(new Chart2DSeriesConfigRule("^DISKWRITE-(.+)$", "Disk-Total-Write", "KiB/s",
 //				labelField, timestampField, diskIOField, new SumByLabelCalculation(
 //						labelField, interval)));
-		return createConfig("Disk IO", "Time", "Disk IO", rules, AxisMode.TIME);
+		Chart2DConfig cfg = createConfig("Disk IO", "Time", "Disk IO", rules, AxisMode.TIME);
+		cfg.setKey("nmon-disk-io");
+		return cfg;
 	}
 
 }
