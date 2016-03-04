@@ -93,7 +93,7 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
             if (!file.exists() || file.isDirectory())
                 continue;
             String ext = "";
-            int dotPosition = fileName.indexOf('.');
+            int dotPosition = fileName.lastIndexOf('.');
             if (dotPosition < 0)
                 continue;
             ext = fileName.substring(dotPosition + 1);
