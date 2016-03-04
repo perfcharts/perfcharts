@@ -21,9 +21,9 @@ public class PerfGeneralReportHandler extends PerfReportHandler {
 
     public PerfGeneralReportHandler() {
         reportHandlerRules.put("jtl", new PerfReportHandlerRule("(.+).jtl", "Performance", "jmeter", PerfReportHandlerRule.DuplicatedAction.APPEND));
-        reportHandlerRules.put("nmon", new PerfReportHandlerRule("([^_]+)(_.*)?\\.nmon", "$1", "nmon", PerfReportHandlerRule.DuplicatedAction.APPEND));
-        reportHandlerRules.put("load", new PerfReportHandlerRule("([^_]+)(_.*)?\\.load", "$1", "nmon", PerfReportHandlerRule.DuplicatedAction.APPEND));
-    }
+        reportHandlerRules.put("nmon", new PerfReportHandlerRule("([^\\._]+).*\\.nmon", "$1", "nmon", PerfReportHandlerRule.DuplicatedAction.APPEND));
+        reportHandlerRules.put("load", new PerfReportHandlerRule("([^\\._]+).*\\.load", "$1", "nmon", PerfReportHandlerRule.DuplicatedAction.APPEND));
+   }
 
 
     @Override
