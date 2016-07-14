@@ -161,6 +161,10 @@ Build
 
 Release Log
 -----------
+### v0.6.1 ###
+- upgrade CSV lib
+- bugfix
+
 ### v0.6.0 ###
 - move build system from Ant to Gradle
 - rename package name from 'chartgeneration' to 'perfcharts'
