@@ -24,7 +24,50 @@ The tool contains three main components: Parser, Generator, and Driver Program.
 * _Generator_ generates charts from data tables according to configuration files that is defined by users and specifies which charts should be produced.
 * _Helpers_ scripts that helps you generate a report easier.
 
-Steps to Generate a Perf-test Report
+Usage
+-----
+
+### Build
+
+- Install from Fedora
+
+``` bash
+# make sure you have JDK and Gradle installed
+dnf install java-1.8.0-openjdk-devel
+# build
+make
+# executables are located in build/dist
+cd build/dist/bin
+```
+
+### Generate reports
+(This is not a completed usage. Please refer to
+section '[Obsoleted] Steps to Generate a Perf-test Report' for more information)
+
+1. Create a directory, and put all performance testing output files to that directory.
+Supported formats include:
+
+- .jtl: Jmeter XML result file, or CSV result file with CSV header
+- .nmon: monitoring log file produced by NMON.
+- .load: CPU load monitoring file (see below)
+
+2. Suppose your files are located in `/tmp/mytestresults`.
+Use `perfcharts` executable to generate report：
+
+``` bash
+perfcharts gen perf-general /tmp/mytestresults
+```
+
+You will get your performance testing report in `/tmp/mytestresults`.
+
+3. You can also try more report templates:
+
+``` bash
+# generate the same report using "perf-baseline" template
+perfcharts gen perf-baseline /tmp/mytestresults
+```
+
+[Obsoleted] Steps to Generate a Perf-test Report
 ----------------------------------
 ### Use cgt-perf ###
 We provide a shell script (cgt-perf) to simplify the process for perf-test report generation.
