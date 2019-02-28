@@ -1,5 +1,5 @@
 NAME=perfcharts
-VERSION=0.6.1
+VERSION=0.6.2
 
 RPMBUILD_SPEC=perfcharts.spec
 DIST_DIR=dist

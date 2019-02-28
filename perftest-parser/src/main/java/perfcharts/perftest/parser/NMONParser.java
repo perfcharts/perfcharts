@@ -26,6 +26,11 @@ public class NMONParser implements DataParser {
         // timeFormat.setTimeZone(utcZone);
 
         final Map<String, Integer> diskColumnMap = new HashMap<String, Integer>(4);
+        final Map<String, Integer> cpuColumnMap = new HashMap<>();
+        final Map<String, Integer> memColumnMap = new HashMap<>();
+        final Map<String, Integer> netColumnMap = new HashMap<>();
+        final Map<String, Integer> vmColumnMap = new HashMap<>();
+
 
         Date startTime = Settings.getInstance().getStartTime();
         Date endTime = Settings.getInstance().getEndTime();
@@ -70,6 +75,21 @@ public class NMONParser implements DataParser {
                     && extractedLine.length >= 3) {
 				metaInfo.put(extractedLine[1], extractedLine[2]);
 			}*/
+            else if ("CPU_ALL".equals(rec.get(0)) && !rec.get(1).startsWith("T")) {
+                for (int i = 2; i < rec.size(); ++i) {
+                    cpuColumnMap.put(rec.get(i), i);
+                }
+            }
+            else if ("MEM".equals(rec.get(0)) && !rec.get(1).startsWith("T")) {
+                for (int i = 2; i < rec.size(); ++i) {
+                    memColumnMap.put(rec.get(i), i);
+                }
+            }
+            else if ("VM".equals(rec.get(0)) && !rec.get(1).startsWith("T")) {
+                for (int i = 2; i < rec.size(); ++i) {
+                    vmColumnMap.put(rec.get(i), i);
+                }
+            }
         }
         in.close();
 
@@ -83,11 +103,11 @@ public class NMONParser implements DataParser {
                     return;
                 writer.printRecord("CPU",
                         ts.toString(),
-                        Float.toString(Float.parseFloat(rec.get(2))),
-                        Float.toString(Float.parseFloat(rec.get(3))),
-                        Float.toString(Float.parseFloat(rec.get(4))),
-                        String.format("%.1f", 100.0f - Float.parseFloat(rec.get(5))),
-                        Integer.toString(Integer.parseInt(rec.get(7)))
+                        Float.toString(Float.parseFloat(rec.get(cpuColumnMap.get("User%")))),
+                        Float.toString(Float.parseFloat(rec.get(cpuColumnMap.get("Sys%")))),
+                        Float.toString(Float.parseFloat(rec.get(cpuColumnMap.get("Wait%")))),
+                        String.format("%.1f", 100.0f - Float.parseFloat(rec.get(cpuColumnMap.get("Idle%")))), // total
+                        Integer.toString(Integer.parseInt(rec.get(cpuColumnMap.get("CPUs"))))
                 );
             }
         });
@@ -100,10 +120,10 @@ public class NMONParser implements DataParser {
                     return;
                 writer.printRecord("MEM",
                         ts.toString(),
-                        Float.toString(Float.parseFloat(rec.get(2))),
-                        Float.toString(Float.parseFloat(rec.get(6))),
-                        Float.toString(Float.parseFloat(rec.get(11))),
-                        Float.toString(Float.parseFloat(rec.get(14)))
+                        Float.toString(Float.parseFloat(rec.get(memColumnMap.get("memtotal")))), // total
+                        Float.toString(Float.parseFloat(rec.get(memColumnMap.get("memfree")))), // free
+                        Float.toString(Float.parseFloat(rec.get(memColumnMap.get("cached")))), // cached
+                        Float.toString(Float.parseFloat(rec.get(memColumnMap.get("buffers")))) // buffers
                 );
             }
         });
@@ -116,8 +136,8 @@ public class NMONParser implements DataParser {
                     return;
                 writer.printRecord("VM",
                         ts.toString(),
-                        Float.toString(Float.parseFloat(rec.get(10))),
-                        Float.toString(Float.parseFloat(rec.get(11)))
+                        Float.toString(Float.parseFloat(rec.get(vmColumnMap.get("pswpin")))), // swap in
+                        Float.toString(Float.parseFloat(rec.get(vmColumnMap.get("pswpout")))) // swap out
                 );
             }
         });
