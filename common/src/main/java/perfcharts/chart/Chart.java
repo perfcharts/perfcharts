@@ -98,4 +98,6 @@ public abstract class Chart {
 	public void setKey(String key) {
 		this.key = key;
 	}
+
+	public abstract boolean isEmpty();
 }

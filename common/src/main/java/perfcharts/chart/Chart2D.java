@@ -161,7 +161,12 @@ public class Chart2D extends Chart {
 	public JSONObject format() throws IOException, InterruptedException {
 		return formatter.format(this);
 	}
-	
+
+	@Override
+	public boolean isEmpty() {
+		return this.series == null || this.series.isEmpty();
+	}
+
 	/**
 	 * Get the formatter that the chart uses.
 	 * 

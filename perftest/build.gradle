@@ -1,4 +1,8 @@
-apply plugin: 'java'
+plugins {
+	id 'java'
+	id 'com.eriwen.gradle.js' version '2.14.1'
+	id 'com.eriwen.gradle.css' version '2.14.0'
+}
 
 archivesBaseName = rootProject.name + '-perftest'
 
@@ -18,49 +22,88 @@ jar {
     }
 }
 
-task buildMonoReportTemplate(type: Exec) {
-	commandLine 'bash', '-e', 'tools/generate_mono_report_template.sh'
-	doFirst {
-        file("$buildDir/dynamicAssets/res").mkdirs()
-		standardOutput = new FileOutputStream(file("$buildDir/dynamicAssets/res/report-mono.template.html"))
+combineJs {
+	encoding = "UTF-8"
+	source = file("src/main/res/report_templates/perf-baseline/html/js.list").text.split('\n').collect {
+		"src/main/res/report_templates/perf-baseline/html/$it"
+	}
+	//source = javascript.source.dev.js.files
+	dest = file("${buildDir}/js/all.js")
+}
+
+minifyJs {
+	source = combineJs
+	dest = file("${buildDir}/js/all-min.js")
+	sourceMap = file("${buildDir}/js/all.sourcemap.json")
+	closure {
+		warningLevel = 'QUIET'
 	}
 }
 
-task buildReportTemplate(type: Exec) {
-	commandLine 'bash', '-e', 'tools/generate_mono_report_template.sh'
-	doFirst {
-        file("$buildDir/dynamicAssets/res").mkdirs()
-		standardOutput = new FileOutputStream(file("$buildDir/dynamicAssets/res/report.template.html"))
+combineCss {
+	source = file("src/main/res/report_templates/perf-baseline/html/css.list").text.split('\n').collect {
+		"src/main/res/report_templates/perf-baseline/html/$it"
+	}
+	dest = "${buildDir}/css/all.css"
+}
+
+minifyCss {
+	source = combineCss
+	dest = "${buildDir}/css/all-min.css"
+	yuicompressor { // Optional
+		lineBreakPos = -1
 	}
 }
 
-task runBuildSh(type: Exec) {
-	commandLine 'bash', '-e', 'build.sh'
+task createMonoReportTemplate() {
+	def html = file("$buildDir/res/report_templates/perf-baseline/html")
+	outputs.dir html
+	doLast {
+		html.mkdirs()
+		def f = new File(html, 'report-mono.template.html')
+		// write HTML header
+		f.write("""<!DOCTYPE html>
+<html lang="en">
+<head>\n""")
+		def sourceDir = 'src/main/res/report_templates/perf-baseline/html'
+		// import head partial
+		f << file("$sourceDir/partial/head.html").text << '\n'
+		// import CSS files
+		f << '<style type="text/css">' << '\n'
+		f << minifyCss.dest.text << '\n'
+		f << '</style>\n</head>\n<body>\n'
+		// import body partial
+		f << file("$sourceDir/partial/body.html").text << '\n'
+		// import JS files
+		f << '<script type="text/javascript">\n'
+		f << minifyJs.dest.text << '\n'
+		f << '</script>\n'
+		f << '</body>\n</html>\n'
+	}
 }
+createMonoReportTemplate.dependsOn(minifyJs)
+createMonoReportTemplate.dependsOn(minifyCss)
 
-// assemble.dependsOn buildReportTemplate, buildMonoReportTemplate
-assemble.dependsOn runBuildSh
+apply plugin: 'distribution'
 
-//apply plugin: 'distribution'
-//
-//distributions {
-//    main {
-//        contents {
-////            from("src/main/dist/bin"){
-////                into('bin')
-////            }
-//            from("src/main/dist/res"){
-//                into('res')
-//            }
-//            from (configurations.runtime){
-//                into('lib')
-//            }
-//            from (jar){
-//                into('lib')
-//            }
-//        }
-//    }
-//}
+distributions {
+    main {
+        contents {
+            from("src/main/dist/bin"){
+                into('bin')
+            }
+            from (configurations.runtime){
+                into('lib')
+            }
+            from (jar){
+                into('lib')
+            }
+			from(createMonoReportTemplate) {
+				into 'res/report-templates/perf/html'
+			}
+        }
+    }
+}
 
 
 
@@ -126,4 +169,12 @@ apply plugin: 'signing'
 signing {
 	useGpgCmd()
 	sign publishing.publications.mavenJava
+}
+
+
+apply plugin: 'application'
+
+application {
+	applicationName = "perfcharts"
+	mainClassName = 'perfcharts.launcher.NewGeneratorLauncher'
 }

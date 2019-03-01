@@ -45,9 +45,11 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
             throw new IOException(e);
         }
         if (cmd.hasOption("h")) {
-            System.out.println("Usage: <input_directory>");
-            //System.out.println(cmd.getOptionValue("h"));
-            //System.out.println(cmd.getArgs()[0]);
+            new HelpFormatter().printHelp("perfcharts gen <report-type> [<options>] <input-dir>",
+                    "A tool to generate performance testing and resource monitoring reports",
+                    options, "report-type: perf-baseline | perf-general | perf-compare | perf-trend\n\n" +
+                            "Please report issues at https://github.com/vfreex/perfcharts/issues",
+                    false);
             return;
         }
 

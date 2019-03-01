@@ -14,7 +14,7 @@ subprojects {
     apply plugin: 'distribution'
 
     group = "io.github.vfreex.perfcharts"
-    version = "1.0.0"
+    version = "1.0.1-SNAPSHOT"
 
     // Add Javadoc JAR and sources JAR to artifact
     task sourcesJar(type: Jar) {
@@ -51,8 +51,8 @@ task copyStaticAssetsFromPerftest(type: Copy) {
 }
 
 task copyStaticAssetsFromGenerator(type: Copy) {
-    from('generator/src/main/dist')
-    into("$buildDir/dist")
+    //from('generator/src/main/dist')
+    //into("$buildDir/dist")
 }
 
 task copyStaticAssets(type: Copy, dependsOn: [copyStaticAssetsFromPerftest, copyStaticAssetsFromGenerator]) {

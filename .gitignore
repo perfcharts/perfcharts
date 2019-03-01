@@ -1,5 +1,6 @@
 *~
-.*/
+.*
 *.iml
 build/
 /dist/
+out/

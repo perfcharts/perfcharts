@@ -35,6 +35,11 @@ public class GenericTable extends Chart {
         return formatter.format(this);
     }
 
+    @Override
+    public boolean isEmpty() {
+        return this.rows == null || this.rows.isEmpty();
+    }
+
     public ChartFormatter<GenericTable> getFormatter() {
         return formatter;
     }

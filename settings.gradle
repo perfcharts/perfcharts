@@ -1,6 +1,4 @@
 rootProject.name = 'perfcharts'
 include 'common'
-include 'generator'
 include 'perftest'
 include 'perftest-parser'
-include 'tool-zabbix-downloader'

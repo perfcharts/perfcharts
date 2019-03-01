@@ -1,5 +1,7 @@
 package perfcharts.common;
 
+import java.io.File;
+
 /**
  * Created by vfreex on 2/1/16.
  */
@@ -9,14 +11,18 @@ public class PerfchartsContext {
     private static PerfchartsContext instance = new PerfchartsContext();
 
     private PerfchartsContext() {
-        if (System.getenv("PERFCHARTS_HOME") != null) {
-            applicationPath = System.getenv("PERFCHARTS_HOME");
-        } else {
+        try {
+            if (System.getenv("PERFCHARTS_HOME") != null) {
+                applicationPath = System.getenv("PERFCHARTS_HOME");
+            } else {
+                applicationPath = new File(PerfchartsContext.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getParent();
+            }
+        } catch (Exception ex) {
             applicationPath = "/usr/share/perfcharts";
         }
     }
 
-    public static PerfchartsContext getInstance(){
+    public static PerfchartsContext getInstance() {
         return instance;
     }
 

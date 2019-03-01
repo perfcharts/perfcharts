@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * This object generates a report that contains many charts by a collection of
@@ -86,7 +87,8 @@ public class ReportGenerator {
         for (int t = 0; t < workingThreads.length; t++) {
             workingThreads[t].join();
         }
-        return new Report(reportConfig.getTitle(), reportConfig.getSubtitle(), reportConfig.getGroupName(), Arrays.asList(charts));
+        return new Report(reportConfig.getTitle(), reportConfig.getSubtitle(), reportConfig.getGroupName(),
+                Arrays.stream(charts).filter(it -> !it.isEmpty()).collect(Collectors.toList()));
     }
 
     public ReportConfig getReportConfig() {

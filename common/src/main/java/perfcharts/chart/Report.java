@@ -50,7 +50,7 @@ public class Report {
      *
      * @return charts
      */
-    public Iterable<Chart> getCharts() {
+    public Collection<Chart> getCharts() {
         return charts;
     }
 
