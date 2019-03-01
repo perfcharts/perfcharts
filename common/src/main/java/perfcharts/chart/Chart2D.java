@@ -155,7 +155,7 @@ public class Chart2D extends Chart {
 	 * format the 2-dimensional chart to string
 	 * 
 	 * @return a string
-	 * @throws Exception
+	 *
 	 */
 	@Override
 	public JSONObject format() throws IOException, InterruptedException {

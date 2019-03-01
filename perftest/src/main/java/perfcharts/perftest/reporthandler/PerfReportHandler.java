@@ -198,14 +198,14 @@ public abstract class PerfReportHandler implements ReportTypeHandler {
     }
 
     /**
-     * file extension -> rule
+     * file extension -&gt; rule
      */
     protected abstract Map<String, PerfReportHandlerRule> getReportHandlerRules();
 
     protected abstract String getReportTemplateHTMLFileName();
 
     /**
-     * parsed file category -> ReportConfigs
+     * parsed file category -&gt; ReportConfigs
      *
      * @return
      */

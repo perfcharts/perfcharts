@@ -142,12 +142,11 @@ public class Utilities {
 
     /**
      * An implementation of randomized partition based selection algorithm
+     * See https://en.wikipedia.org/wiki/Selection_algorithm#Partition-based_selection
      *
      * @param collection a collection
      * @param targetRank a index
      * @return the selected element
-     * @see http
-     * ://en.wikipedia.org/wiki/Selection_algorithm#Partition-based_selection
      */
     public static Number fastSelect(Collection<Long> collection, int targetRank) {
         if (collection.isEmpty())
@@ -178,7 +177,6 @@ public class Utilities {
      * @param start that start index of arr (inclusive)
      * @param end   that end index of arr (exclusive)
      * @return the index of pivot
-     * @see #fastSelect(Collection, int)
      */
     private static <T> int partition(ArrayList<Long> arr, int start, int end) {
         if (end <= start || start < 0 || end > arr.size() || arr.isEmpty())

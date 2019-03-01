@@ -26,8 +26,6 @@ public class AddTransformSelector<T extends Number, U extends Number, V extends 
 	 * Add the values extracted by two other {@link FieldSelector}s, and return
 	 * the sum.
 	 * 
-	 * @see #setFirstOperand(FieldSelector)
-	 * @see #setSecondOperand(FieldSelector)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override

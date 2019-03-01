@@ -15,7 +15,7 @@ public interface DataParser {
      *
      * @param in  the {@link InputStream} containing raw data
      * @param out the {@link OutputStream} to store output
-     * @throws Exception
+     *
      */
     public void parse(InputStream in, OutputStream out) throws IOException, InterruptedException;
 }

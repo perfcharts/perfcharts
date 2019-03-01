@@ -40,7 +40,6 @@ public class ReportGenerator {
      *
      * @param in a input stream
      * @return a report
-     * @throws Exception
      */
     public Report generate(InputStream in) throws IOException, InterruptedException {
         // load data table

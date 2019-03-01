@@ -21,7 +21,7 @@ show_usage() {
 }
 
 # initialize global variables
-[ -z "$CGT_HOME" ] && export CGT_HOME=$(cd "$(dirname -- "$(readlink -e -- "$0")")"; cd ..; pwd)
+[ -z "$CGT_HOME" ] && export CGT_HOME=$(cd "$(dirname -- "$BASH_SOURCE")"; cd ..; pwd)
 [ -z "$CGT_LIB" ] && export CGT_LIB="$CGT_HOME"/lib
 [ -z "$CGT_JAVA_COMMAND" ] && export CGT_JAVA_COMMAND=java
 

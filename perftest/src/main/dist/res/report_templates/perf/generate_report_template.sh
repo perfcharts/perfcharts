@@ -1,7 +1,7 @@
 #!/bin/bash
 # generate a report template
 
-cd "$(dirname -- "$(readlink -e -- "$0")")"
+cd "$(dirname -- $BASH_SOURCE)"
 
 included_scripts=('lib/jquery-2.1.3.js' 'lib/jquery.tablesorter.js' 'lib/jquery.stickytableheaders.js' 'lib/flot/jquery.flot.js lib/flot/jquery.flot.time.js' 'lib/flot/jquery.flot.categories.js' 'lib/flot/jquery.flot.selection.js' 'lib/flot/jquery.flot.crosshair.js' 'lib/flot/jquery.flot.axislabels.js' 'js/perfcharts.js' 'data.js')
 included_stylesheets=('css/tablesorter/theme.default.css' 'css/default-style.css')

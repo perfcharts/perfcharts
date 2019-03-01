@@ -1,5 +1,38 @@
 subprojects {
     apply plugin: 'java'
+
+    compileJava {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    apply plugin: 'distribution'
+
+    group = "io.github.vfreex.perfcharts"
+    version = "1.0.0"
+
+    // Add Javadoc JAR and sources JAR to artifact
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allJava
+        archiveClassifier = 'sources'
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        archiveClassifier = 'javadoc'
+    }
+    artifacts {
+        archives jar
+        archives sourcesJar
+        archives javadocJar
+    }
+
+
 }
 
 task copyJars(type: Copy, dependsOn: subprojects.build) {

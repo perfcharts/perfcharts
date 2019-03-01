@@ -1,5 +1,5 @@
 #!/bin/bash
-SELF=`readlink -e -- "$0"`
+SELF=$BASH_SOURCE
 DIR=`dirname -- "$SELF"`
 export PERFCHARTS_HOME=`cd "$DIR"; cd ..; pwd`
 export CGT_HOME=$PERFCHARTS_HOME

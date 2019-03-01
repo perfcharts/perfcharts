@@ -9,7 +9,6 @@ import java.util.List;
  * 
  * @author Rayson Zhu
  *
- * @see FieldSelector
  */
 public abstract class BinarySelector<T, U, V> implements FieldSelector<V> {
 	/**
@@ -46,8 +45,6 @@ public abstract class BinarySelector<T, U, V> implements FieldSelector<V> {
 	 * Perform some operations on the values extracted by two other {@link FieldSelector}s, and return
 	 * the outcome value.
 	 * 
-	 * @see #setFirstOperand(FieldSelector)
-	 * @see #setSecondOperand(FieldSelector)
 	 */
 	@Override
 	public abstract V select(List<?> row);

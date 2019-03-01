@@ -25,8 +25,6 @@ public class MultiplyTransformSelector<T extends Number, U extends Number, V ext
 	 * Multiply the values extracted by two other {@link FieldSelector}s, and
 	 * return the product.
 	 * 
-	 * @see #setFirstOperand(FieldSelector)
-	 * @see #setSecondOperand(FieldSelector)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override

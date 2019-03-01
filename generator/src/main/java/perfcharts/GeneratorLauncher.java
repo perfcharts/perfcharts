@@ -18,7 +18,7 @@ public class GeneratorLauncher {
      * The entry point
      *
      * @param args Usage: &lt;CONFIG_FILE&gt;
-     * @throws Exception
+     *
      */
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {

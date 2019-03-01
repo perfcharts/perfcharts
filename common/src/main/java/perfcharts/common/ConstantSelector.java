@@ -7,13 +7,11 @@ import java.util.List;
  * specified constant value (regardless of the given data row)
  * 
  * @author Rayson Zhu
- * @see FieldSelector
  */
 public class ConstantSelector<T> implements FieldSelector<T> {
 	/**
 	 * the constant
 	 * 
-	 * @see #select(List)
 	 */
 	private T constant;
 
@@ -35,8 +33,6 @@ public class ConstantSelector<T> implements FieldSelector<T> {
 	 * This method just returns the specified constant, regardless of the
 	 * value of data row
 	 * @param row ignored data row
-	 * @see #setConstant(Object)
-	 * @see #getConstant()
 	 */
 	@Override
 	public T select(List<?> row) {
