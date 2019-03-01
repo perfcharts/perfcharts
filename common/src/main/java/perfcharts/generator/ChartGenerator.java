@@ -16,7 +16,7 @@ public interface ChartGenerator {
 	 * @param dataTable
 	 *            a data table
 	 * @return a chart
-	 * @throws Exception
+	 *
 	 */
 	public Chart generate(DataTable dataTable) throws Exception;
 }

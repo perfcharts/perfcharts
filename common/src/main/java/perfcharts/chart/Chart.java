@@ -49,7 +49,7 @@ public abstract class Chart {
 	 * format the chart to string
 	 * 
 	 * @return a string
-	 * @throws Exception
+	 *
 	 */
 	public abstract JSONObject format() throws IOException, InterruptedException;
 

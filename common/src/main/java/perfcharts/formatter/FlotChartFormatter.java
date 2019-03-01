@@ -17,7 +17,6 @@ import perfcharts.config.AxisMode;
  * Provides the support for formatting a {@link Chart2D} to JSON string that
  * specially optimized for JQuery Flot plotting library.
  * 
- * @see {@linkplain http://www.flotcharts.org/}
  * @author Rayson Zhu
  *
  */

@@ -1,3 +1,4 @@
+rootProject.name = 'perfcharts'
 include 'common'
 include 'generator'
 include 'perftest'

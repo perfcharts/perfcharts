@@ -17,7 +17,7 @@ public interface ChartFormatter<T extends Chart> {
 	 * format a specified {@link Chart} to string
 	 * @param chart a {@link Chart}
 	 * @return formatted string
-	 * @throws Exception
+	 *
 	 */
 	public JSONObject format(T chart) throws IOException, InterruptedException;
 }

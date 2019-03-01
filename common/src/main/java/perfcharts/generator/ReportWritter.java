@@ -26,7 +26,7 @@ public class ReportWritter {
      *
      * @param report a report
      * @param out    the {@link OutputStream} for writing
-     * @throws Exception
+     *
      */
     public void write(Report report, OutputStream out) throws IOException, InterruptedException {
         JSONObject jsonObject = new JSONObject();

@@ -20,7 +20,7 @@ public interface ChartFactory<T extends Chart> {
 	 * @param config
 	 *            a configuration object
 	 * @return a generator
-	 * @throws Exception
+	 *
 	 */
 	public ChartGenerator createGenerator(ChartConfig<T> config) throws Exception;
 
@@ -28,7 +28,7 @@ public interface ChartFactory<T extends Chart> {
 	 * Create a formatter for this kind of chart.
 	 * 
 	 * @return a formatter
-	 * @throws Exception
+	 *
 	 */
 	public ChartFormatter<T> createFormatter() throws Exception;
 }

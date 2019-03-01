@@ -58,7 +58,7 @@ public class Report {
      * Set charts that the report contains.
      *
      * @param charts charts
-    public Report(String title, String subtitle, String groupName, Collection<Chart> charts) {
+    public Report(String title, String subtitle, String groupName, Collection&lt;Chart&gt; charts) {
         this.title = title;
         this.subtitle = subtitle;
         this.groupName = groupName;

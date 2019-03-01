@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SELF=`readlink -e -- "$0"`
+SELF=$BASH_SOURCE
 DIR=`dirname -- "$SELF"`
 JAVA_CMD=java
 YUICOMPRESSOR='../../../../../../../tools/yuicompressor-2.4.8.jar'

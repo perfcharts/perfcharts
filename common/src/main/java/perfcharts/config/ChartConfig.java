@@ -18,7 +18,7 @@ public interface ChartConfig<T extends Chart> {
 	/**
 	 * create a factory object for generating this chart
 	 * @return
-	 * @throws Exception
+	 *
 	 */
 	public ChartFactory<T> createChartFactory() throws IOException, InterruptedException;
 }

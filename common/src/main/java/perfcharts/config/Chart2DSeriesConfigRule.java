@@ -11,7 +11,7 @@ import perfcharts.generator.Chart2DSeriesConfigBuilder;
 /**
  * A {@link Chart2DSeriesConfigRule} defines a rule to produce
  * {@link Chart2DSeriesConfig}s. Instances of this class are usually created by
- * {@link ChartConfigTemplate}, and used by {@link Chart2DSeriesConfigBuilder}
+ * {@link perfcharts.configtemplate.ChartConfigTemplate}, and used by {@link Chart2DSeriesConfigBuilder}
  * to create {@link Chart2DSeriesConfig}s.
  * 
  * @author Rayson Zhu
@@ -21,7 +21,6 @@ public class Chart2DSeriesConfigRule {
 	/**
 	 * The regular expression to filter data rows by row label.
 	 * 
-	 * @see {@link Pattern#compile(String)}
 	 */
 	private String labelPattern;
 	/**
@@ -29,7 +28,6 @@ public class Chart2DSeriesConfigRule {
 	 * captured by {@link #labelPattern} will be used to replace the $1, $2,
 	 * $3,... marks in {@link #seriesLabelFormat}.
 	 * 
-	 * @see {@link #seriesLabelField}
 	 */
 	@Deprecated
 	private String seriesLabelFormat;
@@ -84,14 +82,12 @@ public class Chart2DSeriesConfigRule {
 	 * 
 	 * @param labelPattern
 	 *            The regular expression to filter data rows by row label.
-	 * @see {@link Pattern#compile(String)}
 	 * @param seriesLabelFormat
 	 *            The format of generated series label. The matched part of row
 	 *            label captured by {@link #labelPattern} will be used to
 	 *            replace the $1, $2, $3,... marks in {@link #seriesLabelFormat}
 	 *            .
 	 * 
-	 * @see {@link Matcher#replaceAll(String)}
 	 * @param unit
 	 *            The unit of y-value. It is mainly used to share axes for
 	 *            composite charts.
@@ -119,14 +115,12 @@ public class Chart2DSeriesConfigRule {
 	 * 
 	 * @param labelPattern
 	 *            The regular expression to filter data rows by row label.
-	 * @see {@link Pattern#compile(String)}
 	 * @param seriesLabelFormat
 	 *            The format of generated series label. The matched part of row
 	 *            label captured by {@link #labelPattern} will be used to
 	 *            replace the $1, $2, $3,... marks in {@link #seriesLabelFormat}
 	 *            .
 	 * 
-	 * @see {@link Matcher#replaceAll(String)}
 	 * @param unit
 	 *            The unit of y-value. It is mainly used to share axes for
 	 *            composite charts.
@@ -169,14 +163,12 @@ public class Chart2DSeriesConfigRule {
      *
      * @param labelPattern
      *            The regular expression to filter data rows by row label.
-     * @see {@link Pattern#compile(String)}
      * @param seriesLabelField
      *            The format of generated series label. The matched part of row
      *            label captured by {@link #labelPattern} will be used to
      *            replace the $1, $2, $3,... marks in {@link #seriesLabelFormat}
      *            .
      *
-     * @see {@link Matcher#replaceAll(String)}
      * @param unit
      *            The unit of y-value. It is mainly used to share axes for
      *            composite charts.
@@ -203,14 +195,12 @@ public class Chart2DSeriesConfigRule {
      *
      * @param labelPattern
      *            The regular expression to filter data rows by row label.
-     * @see {@link Pattern#compile(String)}
      * @param seriesLabelField
      *            The format of generated series label. The matched part of row
      *            label captured by {@link #labelPattern} will be used to
      *            replace the $1, $2, $3,... marks in {@link #seriesLabelFormat}
      *            .
      *
-     * @see {@link Matcher#replaceAll(String)}
      * @param unit
      *            The unit of y-value. It is mainly used to share axes for
      *            composite charts.
@@ -250,7 +240,6 @@ public class Chart2DSeriesConfigRule {
 	/**
 	 * Get the regular expression to filter data rows by row label.
 	 * 
-	 * @see {@link Pattern#compile(String)}
 	 * @return a regular expression
 	 */
 	public String getLabelPattern() {
@@ -272,7 +261,6 @@ public class Chart2DSeriesConfigRule {
 	 * captured by {@link #labelPattern} will be used to replace the $1, $2,
 	 * $3,... marks in {@link #seriesLabelFormat} .
 	 * 
-	 * @see {@link Matcher#replaceAll(String)}
 	 * @return the format of generated series label
 	 */
 	public String getSeriesLabelFormat() {
