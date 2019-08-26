@@ -10,7 +10,7 @@ TARBALL_DEST_NAME=$(SRC_DEST_DIR).tar.gz
 .PHONY: help build clean rpm srpm src tarball
 
 build:
-	gradle build
+	gradle installDist
 
 help:
 	@echo 'make [ build | clean | rpm | srpm | src | tarball ]'
@@ -22,16 +22,7 @@ clean:
 src:
 	rm -rf $(DIST_DIR)/$(SRC_DEST_DIR)
 	mkdir -p $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -prf common $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -prf generator $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -prf perftest $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -prf perftest-parser $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -prf tool-zabbix-downloader $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -pf Makefile $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -pf *.gradle $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -pf $(RPMBUILD_SPEC) $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -pf README.md $(DIST_DIR)/$(SRC_DEST_DIR)
-	cp -pf LICENSE $(DIST_DIR)/$(SRC_DEST_DIR)
+	cp -prf * $(DIST_DIR)/$(SRC_DEST_DIR)
 
 tarball: src
 	cd $(DIST_DIR) && tar -czvf $(TARBALL_DEST_NAME) $(SRC_DEST_DIR)

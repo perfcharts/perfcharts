@@ -84,20 +84,29 @@ task createMonoReportTemplate() {
 createMonoReportTemplate.dependsOn(minifyJs)
 createMonoReportTemplate.dependsOn(minifyCss)
 
+assemble.dependsOn(createMonoReportTemplate)
+
+task copyBin(type: Copy) {
+	from('src/main/dist/bin')
+	into("$buildDir/bin")
+}
+
+assemble.dependsOn(copyBin)
+
 apply plugin: 'distribution'
 
 distributions {
     main {
         contents {
-            from("src/main/dist/bin"){
+            from(copyBin){
                 into('bin')
             }
-            from (configurations.runtime){
-                into('lib')
-            }
-            from (jar){
-                into('lib')
-            }
+//            from (configurations.runtime){
+//                into('lib')
+//            }
+//            from (jar){
+//                into('lib')
+//            }
 			from(createMonoReportTemplate) {
 				into 'res/report-templates/perf/html'
 			}
@@ -156,10 +165,10 @@ publishing {
 			def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 			def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-			credentials {
-				username ossrhUsername
-				password ossrhPassword
-			}
+//			credentials {
+//				username ossrhUsername
+//				password ossrhPassword
+//			}
 		}
 	}
 }
@@ -178,3 +187,11 @@ application {
 	applicationName = "perfcharts"
 	mainClassName = 'perfcharts.launcher.NewGeneratorLauncher'
 }
+
+
+task copyLaunchScript(type: Copy) {
+	from(startScripts)
+	into("${buildDir}/bin")
+}
+
+assemble.dependsOn(copyLaunchScript)

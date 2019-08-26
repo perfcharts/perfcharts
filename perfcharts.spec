@@ -2,7 +2,7 @@ Name:           perfcharts
 Version:        0.6.2
 Release:        1%{?dist}
 Summary:        Perfcharts is a tool for generating performance testing reports
-BuildArch:	noarch
+BuildArch:	    noarch
 
 License:        GNU AFFERO GENERAL PUBLIC LICENSE
 URL:            https://docs.engineering.redhat.com/x/hRfXAQ
@@ -28,12 +28,7 @@ make build
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p %{buildroot}%{_datadir}/%{name}/bin
-cp -p build/dist/bin/* %{buildroot}%{_datadir}/%{name}/bin
-mkdir -p %{buildroot}%{_datadir}/%{name}/res
-cp -pr build/dist/res/* %{buildroot}%{_datadir}/%{name}/res
-mkdir -p %{buildroot}%{_datadir}/%{name}/lib
-cp -p build/dist/lib/* %{buildroot}%{_datadir}/%{name}/lib
+cp -r perftest/build/install/perfcharts %{buildroot}%{_datadir}/%{name}
 mkdir -p %{buildroot}%{_bindir}
 %{__ln_s} -f %{_datadir}/%{name}/bin/perfcharts %{buildroot}%{_bindir}/perfcharts
 %{__ln_s} -f %{_datadir}/%{name}/bin/cgt-perf %{buildroot}%{_bindir}/cgt-perf

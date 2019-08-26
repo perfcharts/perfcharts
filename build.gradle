@@ -64,7 +64,18 @@ task copyStaticAssets(type: Copy, dependsOn: [copyStaticAssetsFromPerftest, copy
 //    into "$buildDir/dist"
 //}
 
-task build(type: Copy, dependsOn: [copyJars, copyDeps, copyStaticAssets]) {
+task copyFromSubprojects(type: Copy, dependsOn: subprojects.installDist) {
+    subprojects.each { subproject ->
+        into(subproject.name) {
+            from subproject.installDist
+            include 'docs/**'
+            include 'libs/**'
+            include 'res/**'
+        }
+    }
+}
+
+task build(type: Copy, dependsOn: [copyFromSubprojects]) {
     from 'README.md'
     from 'LICENSE'
     into "$buildDir/dist"
